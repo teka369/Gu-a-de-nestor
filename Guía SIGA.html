@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Guía SIGA: del análisis al primer commit</title>
+<style>
+:root{--bg:#f7f9f7;--card:#fff;--tx:#1b2a1f;--mu:#5a6b5f;--pr:#2e7d32;--pr2:#e6f3e7;--bd:#d9e2da;--code:#10251a;--codetx:#d7f5dc;--warn:#fff4d6;--warnb:#d9a400;--err:#fde8e6;--errb:#c62828;--ok:#e6f3e7;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#101712;--card:#18221a;--tx:#e6efe8;--mu:#9fb2a4;--pr:#6fcf77;--pr2:#1d3a22;--bd:#2a3a2d;--code:#0a110c;--codetx:#c9f2d0;--warn:#3a3112;--warnb:#d9a400;--err:#3d1b18;--errb:#ef6b61;--ok:#1d3a22}}
+html{scroll-padding-top:env(safe-area-inset-top,0px);scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:var(--pr);color:#fff;padding:2rem 1rem}
+header div,main{max-width:900px;margin:0 auto}
+header h1{margin:0 0 .3rem;font-size:clamp(1.5rem,4vw,2.2rem)}
+header p{margin:0;opacity:.92}
+main{padding:1rem}
+nav.toc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:1rem 1.25rem;margin:1rem 0}
+nav.toc ol{columns:2;margin:.4rem 0 0;padding-left:1.2rem}
+nav.toc a{color:var(--pr);text-decoration:none}
+@media (max-width:600px){nav.toc ol{columns:1}}
+section{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:1.25rem;margin:1rem 0}
+h2{margin:0 0 .6rem;color:var(--pr);font-size:1.4rem}
+h3{margin:1.2rem 0 .4rem;font-size:1.05rem}
+.n{display:inline-block;background:var(--pr);color:#fff;border-radius:50%;width:1.9rem;height:1.9rem;line-height:1.9rem;text-align:center;font-size:.95rem;margin-right:.5rem}
+.box{border-left:5px solid;border-radius:8px;padding:.7rem 1rem;margin:.9rem 0}
+.tip{background:var(--ok);border-color:var(--pr)}
+.warn{background:var(--warn);border-color:var(--warnb)}
+.err{background:var(--err);border-color:var(--errb)}
+.box b:first-child{display:block}
+pre{background:var(--code);color:var(--codetx);padding:.8rem 1rem;border-radius:8px;overflow-x:auto;margin:.6rem 0;font:.88rem/1.5 Consolas,"Courier New",monospace}
+code{font-family:Consolas,"Courier New",monospace;background:var(--pr2);padding:.1rem .35rem;border-radius:4px;font-size:.9em}
+pre code{background:none;padding:0}
+.w{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:.93rem}
+th,td{border:1px solid var(--bd);padding:.45rem .6rem;text-align:left;vertical-align:top}
+th{background:var(--pr2)}
+.mermaid{background:var(--card);overflow-x:auto;text-align:center}
+.ok::before{content:"✔ ";color:var(--pr);font-weight:700}
+ul.chk{list-style:none;padding-left:0}
+ul.chk li::before{content:"☐ ";color:var(--pr)}
+details{border:1px solid var(--bd);border-radius:8px;margin:.7rem 0;padding:.4rem .9rem}summary{cursor:pointer;font-weight:700;color:var(--pr);padding:.3rem 0}details h3{margin-top:.9rem}
+.why{background:var(--pr2);border:1px dashed var(--pr);border-radius:8px;padding:.7rem 1rem;margin:.8rem 0}.why b:first-child{display:block;color:var(--pr)}
+footer{text-align:center;color:var(--mu);padding:1.5rem 1rem;font-size:.9rem}
+</style>
+</head>
+<body>
+<header><div>
+<h1>SIGA: Sistema de Gestión Académica</h1>
+<p>Guía didáctica para aprendices ADSO: del diseño inicial a la documentación de análisis y diseño, paso a paso</p>
+</div></header>
+<main>
+
+<nav class="toc"><b>Contenido</b>
+<ol>
+<li><a href="#s1">Resumen ejecutivo</a></li>
+<li><a href="#s2">Alcance de la versión 1</a></li>
+<li><a href="#s3">Arquitectura</a></li>
+<li><a href="#s4">Modelo entidad-relación</a></li>
+<li><a href="#s5">Estructura de carpetas</a></li>
+<li><a href="#s6">Plan de implementación</a></li>
+<li><a href="#s7">Riesgos y seguridad</a></li>
+<li><a href="#s8">Herramientas en Windows 10</a></li>
+<li><a href="#s9">Decisiones aprobadas</a></li>
+<li><a href="#s10">Primer paso concreto</a></li>
+<li><a href="#p1">Práctica: instalar Git y PostgreSQL</a></li>
+<li><a href="#p2">Práctica: crear el proyecto y Git</a></li>
+<li><a href="#p3">Errores reales y cómo se resolvieron</a></li>
+<li><a href="#p4">Práctica: subir a GitHub</a></li>
+<li><a href="#p5">Etapas 1 y 2: documentación</a></li>
+<li><a href="#p5b">Contenido de los documentos .md</a></li>
+<li><a href="#p6">Glosario y siguiente etapa</a></li>
+</ol></nav>
+
+<section id="s1"><h2><span class="n">1</span>Resumen ejecutivo</h2>
+<p>SIGA es una aplicación web cliente-servidor que centraliza la gestión académica de un centro de formación: usuarios con roles, aprendices, fichas, instructores, sesiones y asistencia. Genera reportes con datos reales de PostgreSQL y los exporta a CSV.</p>
+<div class="box warn"><b>Importante</b>Es un proyecto formativo independiente. No es una plataforma oficial del SENA. Se usan <b>solo datos ficticios</b>.</div></section>
+
+<section id="s2"><h2><span class="n">2</span>Alcance de la versión 1</h2>
+<h3>Incluye</h3>
+<ul>
+<li>Login y logout, cambio de contraseña, activar y desactivar cuentas.</li>
+<li>Cuatro roles: Administrador, Líder académico, Instructor y Consulta, con permisos verificados en el servidor.</li>
+<li>CRUD de aprendices con búsqueda, paginación y documento único.</li>
+<li>Fichas, inscripciones y asignación de instructores.</li>
+<li>Sesiones de formación con validación de horarios y cancelación (no se borran).</li>
+<li>Asistencia (presente, ausente, tardanza, excusa) con trazabilidad.</li>
+<li>Reportes con filtros, exportación CSV y dashboard por rol.</li>
+<li>Pruebas automatizadas, documentación y guía de despliegue.</li>
+</ul>
+<h3>Queda fuera de la v1</h3>
+<ul>
+<li>Recuperación de contraseña por correo (requiere servicio de correo y tokens seguros). El Administrador restablece contraseñas.</li>
+<li>Integración con sistemas oficiales del SENA, notificaciones, app móvil nativa y carga masiva.</li>
+</ul></section>
+
+<section id="s3"><h2><span class="n">3</span>Arquitectura y justificación</h2>
+<div class="w"><table>
+<tr><th>Capa</th><th>Tecnología</th><th>Por qué</th></tr>
+<tr><td>Frontend</td><td>HTML5, CSS3, JavaScript nativo</td><td>Permite entender cómo funciona el navegador sin frameworks.</td></tr>
+<tr><td>Backend</td><td>Node.js + Express</td><td>Sencillo, bien documentado, un solo lenguaje.</td></tr>
+<tr><td>Base de datos</td><td>PostgreSQL + paquete <code>pg</code></td><td>Restricciones, transacciones e integridad referencial.</td></tr>
+<tr><td>Autenticación</td><td>Sesiones en PostgreSQL, cookie <code>HttpOnly</code></td><td>El navegador no guarda un token legible por JavaScript y la sesión se puede revocar.</td></tr>
+<tr><td>Contraseñas</td><td>Argon2id (plan B: bcryptjs)</td><td>Estándar recomendado; nunca texto plano.</td></tr>
+<tr><td>Seguridad HTTP</td><td>helmet, express-rate-limit, cors</td><td>Cabeceras seguras y defensa contra fuerza bruta.</td></tr>
+<tr><td>Pruebas</td><td><code>node:test</code> + supertest</td><td>Ligero, sin dependencias pesadas.</td></tr>
+<tr><td>Versiones</td><td>Git + GitHub</td><td>Historial y respaldo del código.</td></tr>
+</table></div>
+<div class="why"><b>¿Para qué sirve?</b>Separar capas evita que todo quede en un solo archivo. El navegador muestra, el servidor decide y aplica las reglas, y la base de datos guarda. Si algo falla, sabes en qué capa buscar.</div>
+<div class="box tip"><b>Decisión clave</b>Express sirve también el frontend, así que página y API comparten origen. Esto simplifica CORS, mejora las cookies <code>SameSite</code> y deja un solo servicio por desplegar.</div>
+<h3>Diagrama de arquitectura</h3>
+<pre class="mermaid">
+flowchart LR
+  U["Navegador (HTML, CSS, JS)"] -->|"HTTPS fetch + cookie"| E
+  subgraph S["Servidor Node.js / Express"]
+    E["app.js: helmet, cors, rate-limit"] --> M["Middlewares: auth y roles"]
+    M --> R["Rutas"] --> V["Validadores"] --> C["Controladores"] --> SV["Servicios"] --> D["Acceso a datos (pg)"]
+    E -.-> F["frontend/ estático"]
+  end
+  D --> P[("PostgreSQL")]
+</pre></section>
+
+<section id="s4"><h2><span class="n">4</span>Modelo entidad-relación inicial</h2>
+<ul>
+<li>El instructor es un <b>usuario</b> con rol Instructor: no se duplican datos personales.</li>
+<li>La <b>inscripción</b> une aprendiz y ficha, y guarda el historial.</li>
+<li>La <b>asistencia</b> es una fila por aprendiz y sesión, con quién la registró y modificó.</li>
+<li>La <b>auditoría</b> guarda el antes y el después de los cambios relevantes.</li>
+</ul>
+<pre class="mermaid">
+erDiagram
+  ROLES ||--o{ USUARIOS : tiene
+  USUARIOS ||--o| INSTRUCTORES : "puede ser"
+  USUARIOS ||--o{ AUDITORIA : genera
+  APRENDICES ||--o{ INSCRIPCIONES : "se inscribe"
+  FICHAS ||--o{ INSCRIPCIONES : agrupa
+  INSTRUCTORES ||--o{ ASIGNACIONES_INSTRUCTOR : "es asignado"
+  FICHAS ||--o{ ASIGNACIONES_INSTRUCTOR : tiene
+  FICHAS ||--o{ SESIONES : programa
+  INSTRUCTORES ||--o{ SESIONES : dicta
+  SESIONES ||--o{ ASISTENCIAS : registra
+  INSCRIPCIONES ||--o{ ASISTENCIAS : "corresponde a"
+  USUARIOS ||--o{ ASISTENCIAS : "registra o modifica"
+</pre>
+<h3>Restricciones clave</h3>
+<ul>
+<li><code>UNIQUE(tipo_documento, numero_documento)</code> en aprendices.</li>
+<li><code>UNIQUE(aprendiz_id, ficha_id)</code> en inscripciones.</li>
+<li><code>UNIQUE(sesion_id, inscripcion_id)</code> en asistencias.</li>
+<li><code>UNIQUE(instructor_id, ficha_id)</code> en asignaciones.</li>
+<li><code>CHECK(hora_fin &gt; hora_inicio)</code> en sesiones.</li>
+</ul></section>
+
+<section id="s5"><h2><span class="n">5</span>Estructura de carpetas</h2>
+<pre><code>siga/
+├── frontend/      páginas HTML, css/ y js/
+├── backend/
+│   ├── src/
+│   │   ├── config/        variables de entorno y conexión a la BD
+│   │   ├── routes/        definen las URL
+│   │   ├── controllers/   reciben la petición y responden
+│   │   ├── services/      lógica de negocio y SQL
+│   │   ├── middlewares/   autenticación, roles, errores
+│   │   ├── validators/    reglas de entrada
+│   │   ├── app.js         configura Express
+│   │   └── server.js      arranca el servidor
+│   ├── tests/
+│   └── package.json
+├── database/      migrations/ y seeds/
+├── docs/          requisitos, manuales, diccionario
+├── .gitignore
+├── .env.example
+└── README.md</code></pre>
+<p>Cada carpeta tiene una sola responsabilidad. Así, cambiar una regla de negocio no obliga a tocar las rutas.</p></section>
+
+<section id="s6"><h2><span class="n">6</span>Plan de implementación</h2>
+<div class="w"><table>
+<tr><th>Etapa</th><th>Entregable</th><th>Para avanzar</th></tr>
+<tr><td>1. Análisis</td><td>Requisitos, historias, reglas de negocio</td><td>Reglas aprobadas</td></tr>
+<tr><td>2. Diseño</td><td>Casos de uso, ER final, diccionario</td><td>Modelo revisado</td></tr>
+<tr><td>3. Entorno</td><td>Herramientas, repo, estructura</td><td>Versiones verificadas</td></tr>
+<tr><td>4. Base de datos</td><td>Migraciones, seeds, usuario de BD</td><td>Restricciones probadas</td></tr>
+<tr><td>5. Backend</td><td>API, autenticación, validaciones</td><td>Endpoints probados</td></tr>
+<tr><td>6. Frontend</td><td>Páginas, formularios, responsive</td><td>Navegación completa</td></tr>
+<tr><td>7. Integración</td><td>Flujos de extremo a extremo</td><td>Módulos funcionando</td></tr>
+<tr><td>8. Pruebas</td><td>Pruebas automáticas y manuales</td><td>Resultados documentados</td></tr>
+<tr><td>9. Despliegue</td><td>App en línea (planes gratuitos)</td><td>Login y permisos en producción</td></tr>
+<tr><td>10. Entrega</td><td>Manuales y sustentación</td><td>Lista de aceptación completa</td></tr>
+</table></div>
+<div class="box tip"><b>Regla de trabajo</b>No se avanza hasta verificar que el paso anterior funcionó.</div></section>
+
+<section id="s7"><h2><span class="n">7</span>Riesgos técnicos y decisiones de seguridad</h2>
+<h3>Riesgos</h3>
+<ul>
+<li><b>Instalación en Windows:</b> módulos nativos como <code>argon2</code> pueden fallar; plan B: <code>bcryptjs</code>.</li>
+<li><b>Planes gratuitos:</b> pueden cambiar o suspender la app por inactividad. Se verifican en la Etapa 9.</li>
+<li><b>Curva de aprendizaje:</b> el alcance es amplio; se trabaja por módulos pequeños.</li>
+<li><b>Datos personales:</b> nada de datos reales sin autorización.</li>
+</ul>
+<h3>Seguridad desde el inicio</h3>
+<ul>
+<li>Contraseñas con Argon2id, nunca en texto plano ni en logs.</li>
+<li>Secretos en <code>.env</code> (fuera de Git); solo <code>.env.example</code> en el repositorio.</li>
+<li>SQL siempre parametrizado, sin concatenar datos del usuario.</li>
+<li>Permisos verificados <b>en el servidor</b>: ocultar botones no es seguridad.</li>
+<li>Lista blanca de campos y de columnas de ordenamiento.</li>
+<li>Límite de intentos en el login y cookies <code>HttpOnly</code> + <code>Secure</code> + <code>SameSite</code>.</li>
+<li>Usuario de BD con mínimo privilegio y mensajes de error genéricos hacia el cliente.</li>
+</ul></section>
+
+<section id="s8"><h2><span class="n">8</span>Herramientas a instalar en Windows 10</h2>
+<div class="w"><table>
+<tr><th>Herramienta</th><th>Comando de verificación</th></tr>
+<tr><td>Node.js (LTS)</td><td><code>node -v</code> y <code>npm -v</code></td></tr>
+<tr><td>Git</td><td><code>git --version</code></td></tr>
+<tr><td>PostgreSQL (con Command Line Tools)</td><td><code>psql --version</code></td></tr>
+<tr><td>Visual Studio Code</td><td><code>code --version</code></td></tr>
+<tr><td>Cuenta de GitHub</td><td>Con verificación en dos pasos</td></tr>
+</table></div>
+<p>Después de instalar, <b>cierra y abre de nuevo la terminal</b>; si no, no reconoce los cambios.</p>
+<div class="why"><b>¿Para qué sirve cada una?</b><b>Node.js</b> ejecuta JavaScript fuera del navegador (el servidor). <b>npm</b> instala librerías. <b>Git</b> guarda el historial del código. <b>PostgreSQL</b> almacena los datos de forma ordenada y segura. <b>VS Code</b> es el editor. <b>GitHub</b> guarda una copia del proyecto en internet.</div></section>
+
+<section id="s9"><h2><span class="n">9</span>Decisiones aprobadas</h2>
+<div class="w"><table>
+<tr><th>Id</th><th>Decisión</th></tr>
+<tr><td>D1</td><td>Express sirve frontend y API desde el mismo origen.</td></tr>
+<tr><td>D2</td><td>Sesiones en PostgreSQL con cookie <code>HttpOnly</code>, sin JWT.</td></tr>
+<tr><td>D3</td><td>Eliminación lógica (desactivar) en lugar de borrar.</td></tr>
+<tr><td>D4</td><td>% asistencia = (presentes + tardanzas) ÷ (sesiones realizadas − excusas justificadas) × 100. Las canceladas no cuentan.</td></tr>
+<tr><td>D5</td><td>Sin recuperación por correo; el Administrador restablece contraseñas.</td></tr>
+<tr><td>D6</td><td>El Instructor solo ve las fichas que tiene asignadas.</td></tr>
+</table></div></section>
+
+<section id="s10"><h2><span class="n">10</span>Primer paso concreto</h2>
+<p>Abrir la terminal (CMD o PowerShell) y verificar qué herramientas existen:</p>
+<pre><code>node -v
+npm -v
+git --version
+psql --version
+code --version</code></pre>
+<p>Si un comando responde “no se reconoce”, esa herramienta falta o no está en el PATH. En nuestro caso faltaban Git y PostgreSQL.</p></section>
+
+<section id="p1"><h2>Práctica 1: instalar Git y PostgreSQL</h2>
+<h3>Git</h3>
+<div class="why"><b>¿Para qué sirve?</b>Git guarda “fotografías” del proyecto (commits). Permite volver atrás si algo se daña y ver qué cambió, cuándo y por qué. La identidad (nombre y correo) queda registrada en cada commit.</div>
+<ol>
+<li>Descargar “Git for Windows” desde git-scm.com. Editor por defecto: VS Code; rama inicial: <code>main</code>.</li>
+<li>Cerrar y abrir una terminal nueva, y verificar <code>git --version</code>.</li>
+<li>Configurar la identidad (con tus datos):
+<pre><code>git config --global user.name "Tu Nombre"
+git config --global user.email "tu-correo@ejemplo.com"
+git config --global --list</code></pre></li>
+</ol>
+<p>Los comandos <code>git config</code> no muestran nada cuando funcionan: el silencio es normal.</p>
+<h3>PostgreSQL</h3>
+<div class="why"><b>¿Para qué sirve?</b>Es el motor de base de datos de SIGA. Guarda aprendices, fichas y asistencia, y hace cumplir reglas (por ejemplo, que no haya dos documentos iguales). <code>psql</code> es su terminal y pgAdmin su interfaz gráfica.</div>
+<ol>
+<li>Descargar el instalador de postgresql.org/download/windows.</li>
+<li>Marcar PostgreSQL Server, pgAdmin 4 y <b>Command Line Tools</b>. Puerto 5432.</li>
+<li>Definir la contraseña de <code>postgres</code> y guardarla en un lugar seguro. <b>Nunca la compartas en un chat.</b></li>
+</ol>
+<div class="box err"><b>Problema: <code>psql</code> no se reconoce</b>El instalador a veces no agrega la carpeta <code>bin</code> al PATH. Verifica con <code>dir "C:\Program Files\PostgreSQL"</code> (en nuestro caso, versión 18) y agrega <code>C:\Program Files\PostgreSQL\18\bin</code> en Variables de entorno &gt; Path (usuario) &gt; Nuevo. Cierra y abre la terminal.</div>
+<h3>Verificar el servicio y la conexión</h3>
+<pre><code>sc query postgresql-x64-18
+psql -U postgres -h localhost -p 5432
+SELECT version();
+\q</code></pre>
+<p>Debe aparecer <code>ESTADO : 4 RUNNING</code> y luego una línea que empieza con <code>PostgreSQL 18</code>. La advertencia del código de página (850 vs 1252) es normal en CMD.</p></section>
+
+<section id="p2"><h2>Práctica 2: crear el proyecto y el repositorio Git</h2>
+<h3>Carpetas</h3>
+<pre><code>cd %USERPROFILE%
+mkdir proyectos
+cd proyectos
+mkdir siga
+cd siga
+mkdir frontend\css frontend\js
+mkdir backend\src\config backend\src\routes backend\src\controllers backend\src\services backend\src\middlewares backend\src\validators backend\tests
+mkdir database\migrations database\seeds
+mkdir docs
+tree /f</code></pre>
+<h3>Inicializar Git y abrir VS Code</h3>
+<div class="why"><b>¿Para qué sirve?</b><code>git init</code> convierte la carpeta en un repositorio: desde ese momento Git vigila los cambios. <code>-b main</code> nombra la rama principal.</div>
+<pre><code>git init -b main
+code .</code></pre>
+<p>El punto después de <code>code</code> abre la carpeta actual.</p>
+<h3>Archivos base (en la raíz de siga)</h3>
+<ul>
+<li><code>.gitignore</code>: lista lo que Git no debe versionar (<code>node_modules/</code>, <code>.env</code>, respaldos).</li>
+<li><code>.env.example</code>: plantilla de configuración <b>sin secretos reales</b>; sí va a Git.</li>
+<li><code>.env</code>: copia real, creada con <code>copy .env.example .env</code>; nunca va a Git.</li>
+<li><code>README.md</code>: descripción del proyecto.</li>
+<li><code>backend/package.json</code>: creado con <code>npm init -y</code> y luego ajustado.</li>
+</ul>
+<h3>Primer commit</h3>
+<div class="why"><b>¿Para qué sirve?</b><code>git add .</code> elige qué entra en la foto; <code>git commit</code> la toma con un mensaje; <code>git status</code> sirve para revisar antes de confirmar. Así evitas subir archivos que no deben ir, como <code>.env</code>.</div>
+<pre><code>git status
+git check-ignore -v .env
+git add .
+git status
+git commit -m "Estructura inicial del proyecto SIGA"
+git log --oneline</code></pre>
+<p>Resultado esperado: <code>4 files changed</code> y una línea con el código del commit. <b>.env no debe aparecer en la lista.</b></p>
+<div class="box warn"><b>Advertencia normal</b><code>LF will be replaced by CRLF</code> solo indica que Git ajusta los saltos de línea en Windows. No es un error.</div></section>
+
+<section id="p3"><h2>Errores reales y cómo se resolvieron</h2>
+<div class="w"><table>
+<tr><th>Síntoma</th><th>Causa</th><th>Solución</th></tr>
+<tr><td><code>git</code> o <code>psql</code> “no se reconoce”</td><td>No instalado, o terminal abierta antes de instalar</td><td>Instalar y abrir una terminal nueva; si persiste, revisar el PATH.</td></tr>
+<tr><td><code>.env</code> aparece en <code>git status</code></td><td>El archivo se llamó <code>gitignore</code> sin el punto</td><td><code>ren gitignore .gitignore</code> y volver a revisar.</td></tr>
+<tr><td>El commit dice “nothing added to commit”</td><td>Se escribió <code>git add</code> sin el punto</td><td>Usar <code>git add .</code> y repetir el commit.</td></tr>
+<tr><td>“Nothing specified, nothing added” y el commit no guarda nada</td><td>Se escribió <code>git add</code> sin el punto (pasó dos veces)</td><td>Recordar: <code>git add</code> + espacio + punto. Luego <code>git status</code> debe mostrar archivos en “Changes to be committed”.</td></tr>
+<tr><td><code>code</code> abre VS Code sin la carpeta</td><td>Faltó el punto</td><td>Usar <code>code .</code> o Archivo &gt; Abrir carpeta.</td></tr>
+</table></div>
+<div class="box tip"><b>Hábito profesional</b>Antes de cada <code>git add .</code>, ejecuta <code>git status</code>. Un secreto que llega a GitHub se considera expuesto aunque lo borres después.</div></section>
+
+<section id="p4"><h2>Práctica 3: subir el código a GitHub</h2>
+<div class="why"><b>¿Para qué sirve?</b>GitHub guarda una copia remota del repositorio: es tu respaldo, permite trabajar desde otro equipo y sirve como evidencia del proceso. <code>origin</code> es el nombre del repositorio remoto y <code>push</code> envía tus commits.</div>
+<ol>
+<li>En github.com: <b>New repository</b>, nombre <code>siga</code>, visibilidad <b>Private</b>, sin README ni .gitignore.</li>
+<li>Conectar y subir (cambia <code>TU_USUARIO</code>):
+<pre><code>git remote add origin https://github.com/TU_USUARIO/siga.git
+git remote -v
+git push -u origin main</code></pre></li>
+<li>Autorizar en el navegador cuando Git lo solicite. Nunca escribas tu contraseña en la terminal.</li>
+<li>Recargar GitHub y confirmar que <b>no</b> aparece <code>.env</code>.</li>
+</ol>
+<h3>Lista de verificación</h3>
+<ul class="chk">
+<li>Node, npm, Git, PostgreSQL y VS Code responden con versión.</li>
+<li>El servicio de PostgreSQL está en <code>RUNNING</code> y conecta.</li>
+<li>La estructura de carpetas existe y <code>git log --oneline</code> muestra el commit.</li>
+<li><code>.env</code> no está en Git ni en GitHub.</li>
+</ul>
+<h3>Comprobar con evidencia</h3>
+<pre><code>git status -sb
+git ls-files
+git ls-remote origin</code></pre>
+<p>Esperado: <code>## main...origin/main</code>; <code>ls-files</code> sin <code>.env</code>; y <code>ls-remote</code> con el mismo código del commit local. Un “Everything up-to-date” no basta: se comprueba.</p></section>
+
+<section id="p5"><h2>Etapas 1 y 2: la documentación antes del código</h2>
+<div class="why"><b>¿Para qué sirve?</b>Programar sin saber qué se va a construir genera retrabajo. Estos documentos fijan <i>qué</i> hará el sistema, <i>quién</i> lo usa y <i>cómo</i> se guardarán los datos. Además son la evidencia académica del proyecto, y los criterios de aceptación se convertirán en pruebas.</div>
+<div class="w"><table>
+<tr><th>Archivo</th><th>Para qué sirve</th><th>Estado</th></tr>
+<tr><td><code>docs/requisitos.md</code></td><td>Problema, objetivos, alcance, actores, requisitos funcionales (RF) y no funcionales (RNF), reglas de negocio (RN) y permisos por rol.</td><td>Subido (commit <code>1064fee</code>)</td></tr>
+<tr><td><code>docs/historias-usuario.md</code></td><td>22 historias “como… quiero… para…” con criterios de aceptación. Incluye la decisión D7 (rol Consulta).</td><td>Subido (commit <code>4c37283</code>)</td></tr>
+<tr><td><code>docs/arquitectura.md</code></td><td>Capas, ciclo de una solicitud, casos de uso y tres diagramas de secuencia (login, asistencia, reporte).</td><td>Subido (commit <code>a59e86c</code>); cinco diagramas verificados en GitHub</td></tr>
+<tr><td><code>database/modelo-er.md</code></td><td>Diagrama entidad-relación de 10 tablas, normalización, restricciones, índices y estrategia de migraciones.</td><td>Entregado; falta verificar el commit y el diagrama</td></tr>
+<tr><td><code>docs/diccionario-datos.md</code></td><td>Cada tabla y columna con tipo, nulidad y restricciones.</td><td>Entregado; falta verificar el commit</td></tr>
+</table></div>
+<h3>Rutina de cada entrega</h3>
+<pre><code>git add .
+git status
+git commit -m "Etapa 2: mensaje claro"
+git push
+git log --oneline</code></pre>
+<h3>Cómo verificar los diagramas Mermaid</h3>
+<ol>
+<li>Sube el archivo y ábrelo en GitHub en la vista renderizada (no en Raw).</li>
+<li>Un diagrama está bien si se ve como dibujo con cajas y flechas.</li>
+<li>Hay error si ves un bloque de texto gris o un recuadro rojo. Pega el bloque en mermaid.live para ver dónde falla.</li>
+</ol>
+<h3>Decisiones tomadas hasta ahora</h3>
+<ul>
+<li><b>D1 a D6</b> aprobadas (ver sección 9) y <b>D7</b>: Consulta lee todo, sin datos de contacto ni auditoría, y no modifica.</li>
+<li><b>RN-07 a RN-16</b> aprobadas por defecto: documento único, sin inscripciones duplicadas, horarios sin solapes, sesión realizada al guardar asistencia, etc.</li>
+<li><b>RN-17</b> (propuesta, por confirmar): una sesión solo se programa con un instructor asignado a esa ficha, forzado por una clave foránea compuesta.</li>
+</ul></section>
+
+<section id="p5b"><h2>Contenido de los documentos .md</h2>
+<p>Resumen de lo que contiene cada documento. Despliega cada uno. Dentro de cada bloque está el texto para copiar (los cinco documentos).</p>
+<h3>Dónde va cada archivo</h3>
+<div class="w"><table>
+<tr><th>Archivo</th><th>Ruta exacta</th><th>Mensaje de commit</th></tr>
+<tr><td>requisitos</td><td><code>siga\docs\requisitos.md</code></td><td><code>Etapa 1: documento de requisitos</code></td></tr>
+<tr><td>historias de usuario</td><td><code>siga\docs\historias-usuario.md</code></td><td><code>Etapa 1: historias de usuario</code></td></tr>
+<tr><td>arquitectura</td><td><code>siga\docs\arquitectura.md</code></td><td><code>Etapa 2: arquitectura, casos de uso y secuencias</code></td></tr>
+<tr><td>modelo ER</td><td><code>siga\database\modelo-er.md</code></td><td><code>Etapa 2: modelo ER final y diccionario de datos</code></td></tr>
+<tr><td>diccionario</td><td><code>siga\docs\diccionario-datos.md</code></td><td>(el mismo commit del modelo ER)</td></tr>
+</table></div>
+<div class="box tip"><b>Cómo copiar</b>En VS Code: clic derecho en la carpeta &gt; Nuevo archivo, escribe el nombre exacto (con <code>.md</code>), pega el texto y guarda con Ctrl + S. Luego: <code>git add .</code>, <code>git status</code> (sin <code>.env</code>), <code>git commit -m "..."</code> y <code>git push</code>.</div>
+
+<details><summary>1. requisitos.md</summary>
+<h3>Problema y justificación</h3>
+<p>La información académica suele estar en hojas de cálculo, papel o archivos separados: es difícil consultar historial, detectar inasistencias, evitar duplicados y saber quién cambió un dato. Una aplicación web con base relacional centraliza los datos, controla accesos por rol, conserva trazabilidad y calcula reportes reales.</p>
+<h3>Objetivos</h3>
+<p><b>General:</b> construir una aplicación web para administrar aprendices, fichas, instructores, sesiones y asistencia.</p>
+<ol><li>Autenticación segura y permisos por rol verificados en el servidor.</li><li>Gestionar aprendices, fichas, inscripciones e instructores con integridad.</li><li>Programar sesiones y registrar asistencia con trazabilidad.</li><li>Reportes con filtros y exportación CSV.</li><li>Documentar, probar y desplegar con planes gratuitos si es posible.</li></ol>
+<h3>Alcance y actores</h3>
+<p>Incluye y excluye lo ya visto en la sección 2. Limitaciones: planes gratuitos pueden suspender la app, sin disponibilidad garantizada, sin datos reales sin autorización. Actores: Administrador, Líder académico, Instructor y Consulta. Los aprendices no inician sesión.</p>
+<h3>Requisitos funcionales (RF-01 a RF-30)</h3>
+<div class="w"><table>
+<tr><th>Grupo</th><th>Requisitos</th></tr>
+<tr><td>Usuarios (01-05)</td><td>Iniciar y cerrar sesión; cambiar contraseña propia; el Administrador crea, edita, activa, desactiva y restablece; rol validado en cada operación.</td></tr>
+<tr><td>Aprendices (06-10)</td><td>Registrar y editar; listar con paginación; buscar por nombre, documento o ficha; activar y desactivar; ver historial.</td></tr>
+<tr><td>Fichas e instructores (11-14)</td><td>CRUD de fichas con estado; inscribir aprendices; asignar instructores; datos del instructor vinculados a su usuario.</td></tr>
+<tr><td>Sesiones (15-18)</td><td>Crear con fecha, horas, ficha, instructor y tema; consultar por ficha, instructor y fecha; editar y cancelar; historial.</td></tr>
+<tr><td>Asistencia (19-24)</td><td>Elegir sesión y ver inscritos; estados presente, ausente, tardanza, excusa; observaciones; quién registró y modificó; corregir; resumen por sesión.</td></tr>
+<tr><td>Reportes y panel (25-30)</td><td>Aprendices por ficha; historial por aprendiz; asistencia por ficha y periodo con filtros; porcentajes y conteos; exportar CSV; dashboard por rol con datos reales.</td></tr>
+</table></div>
+<h3>Requisitos no funcionales</h3>
+<ul><li>RNF-01 Seguridad: Argon2id o bcrypt, secretos en variables de entorno.</li><li>RNF-02 Integridad: SQL parametrizado, restricciones, transacciones.</li><li>RNF-03 Autenticación: sesión en servidor, cookie HttpOnly, SameSite, Secure en producción.</li><li>RNF-04 Usabilidad: español, responsive, accesibilidad básica.</li><li>RNF-05 Mantenibilidad: capas separadas.</li><li>RNF-06 Calidad: pruebas de API, permisos y reportes.</li><li>RNF-07 Costo: $0 COP.</li><li>RNF-08 Privacidad: solo datos ficticios.</li><li>RNF-09 Errores: mensaje genérico al cliente, detalle en el servidor.</li></ul>
+<h3>Reglas de negocio</h3>
+<div class="w"><table>
+<tr><th>Regla</th><th>Contenido</th></tr>
+<tr><td>RN-01 a RN-06</td><td>Son D1 a D6 (sección 9). En RN-04: tardanzas cuentan como asistencia y si el denominador es 0 se muestra “sin datos”.</td></tr>
+<tr><td>RN-07</td><td>Documento (tipo y número) único.</td></tr>
+<tr><td>RN-08 / RN-09</td><td>Sin inscripción duplicada en la misma ficha / sin asignación duplicada del instructor.</td></tr>
+<tr><td>RN-10</td><td>Hora de fin posterior a la de inicio.</td></tr>
+<tr><td>RN-11</td><td>Sin sesiones activas solapadas para el mismo instructor ni la misma ficha.</td></tr>
+<tr><td>RN-12</td><td>Estados: programada, realizada, cancelada. Pasa a realizada al guardar asistencia; la cancelada no admite asistencia.</td></tr>
+<tr><td>RN-13 / RN-14</td><td>Un registro por aprendiz y sesión / solo inscripciones activas de la ficha.</td></tr>
+<tr><td>RN-15</td><td>Toda modificación guarda quién, cuándo y el valor anterior.</td></tr>
+<tr><td>RN-16</td><td>Cuenta desactivada: no inicia sesión y se invalidan sus sesiones.</td></tr>
+</table></div>
+<h3>Permisos por rol</h3>
+<p>C crear, L leer, E editar, D desactivar.</p>
+<div class="w"><table>
+<tr><th>Módulo</th><th>Admin.</th><th>Líder</th><th>Instructor</th><th>Consulta</th></tr>
+<tr><td>Usuarios y roles</td><td>CLED</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Aprendices</td><td>CLED</td><td>CLED</td><td>L sus fichas</td><td>L</td></tr>
+<tr><td>Fichas</td><td>CLED</td><td>CLED</td><td>L asignadas</td><td>L</td></tr>
+<tr><td>Instructores</td><td>CLED</td><td>CLED</td><td>L propio</td><td>L</td></tr>
+<tr><td>Sesiones</td><td>CLED</td><td>CLED</td><td>CLE sus fichas</td><td>L</td></tr>
+<tr><td>Asistencia</td><td>CLE</td><td>CLE</td><td>CLE sus sesiones</td><td>L</td></tr>
+<tr><td>Reportes y CSV</td><td>L</td><td>L</td><td>L sus fichas</td><td>L</td></tr>
+</table></div>
+<h3>Texto para copiar en <code>docs/requisitos.md</code></h3>
+<p>Copia todo el recuadro, desde el título hasta la última línea.</p>
+<pre style="max-height:30rem;overflow:auto"><code># Requisitos de SIGA (Sistema de Gestión Académica)
+
+Proyecto formativo independiente de Tecnología en Análisis y Desarrollo de
+Software (ADSO). No es una plataforma oficial del SENA ni se integra a sus
+sistemas. Durante el desarrollo y las pruebas se usan únicamente datos ficticios.
+
+## 1. Planteamiento del problema
+
+La información académica de aprendices, fichas, sesiones y asistencia suele
+llevarse en hojas de cálculo, formatos en papel o archivos separados. Esto
+dificulta consultar el historial, detectar inasistencias a tiempo, evitar
+registros duplicados y saber quién modificó un dato.
+
+## 2. Justificación
+
+Una aplicación web con base de datos relacional permite centralizar la
+información, controlar quién accede a ella según su rol, conservar la
+trazabilidad de los cambios y calcular reportes a partir de datos reales. A la
+vez, sirve como evidencia de aprendizaje de buenas prácticas de ingeniería de
+software.
+
+## 3. Objetivos
+
+**General.** Construir una aplicación web que permita administrar la
+información académica de aprendices, fichas, instructores, sesiones y asistencia
+desde una plataforma centralizada.
+
+**Específicos.**
+
+1. Implementar autenticación segura y control de permisos por rol verificado en
+   el servidor.
+2. Gestionar aprendices, fichas, inscripciones e instructores con integridad de
+   datos.
+3. Programar sesiones de formación y registrar la asistencia con trazabilidad.
+4. Generar reportes de asistencia con filtros y exportación a CSV.
+5. Documentar, probar y desplegar el sistema usando servicios con plan gratuito,
+   cuando estén disponibles.
+
+## 4. Alcance de la versión 1
+
+**Incluye:** autenticación y usuarios, aprendices, fichas, inscripciones,
+asignación de instructores, sesiones, asistencia, reportes con CSV, dashboard
+por rol, pruebas y documentación.
+
+**No incluye:** recuperación de contraseña por correo, integración con sistemas
+oficiales del SENA, notificaciones, aplicación móvil nativa y carga masiva de
+datos.
+
+**Limitaciones:**
+
+- Los planes gratuitos de despliegue pueden suspender la aplicación por
+  inactividad o cambiar sus condiciones.
+- No se garantiza disponibilidad permanente.
+- No se debe cargar información real de aprendices sin autorización y sin medidas
+  de protección de datos personales.
+
+## 5. Actores
+
+| Actor | Descripción |
+|---|---|
+| Administrador | Gestiona usuarios, roles y todos los módulos. |
+| Líder académico | Administra aprendices, fichas, sesiones, instructores y reportes. |
+| Instructor | Consulta sus fichas asignadas, registra sesiones y toma asistencia. |
+| Consulta | Visualiza la información autorizada, sin modificarla. |
+
+Los aprendices no inician sesión: son registros administrados por el personal.
+
+## 6. Requisitos funcionales
+
+### Autenticación y usuarios
+
+- **RF-01.** Iniciar y cerrar sesión.
+- **RF-02.** Cambiar la contraseña propia.
+- **RF-03.** El Administrador crea, edita, activa y desactiva usuarios.
+- **RF-04.** El Administrador restablece la contraseña de un usuario.
+- **RF-05.** El servidor valida el rol en cada operación protegida.
+
+### Aprendices
+
+- **RF-06.** Registrar y editar aprendices.
+- **RF-07.** Listar aprendices con paginación.
+- **RF-08.** Buscar por nombre, documento o ficha.
+- **RF-09.** Activar y desactivar aprendices.
+- **RF-10.** Consultar el historial de inscripciones y de asistencia.
+
+### Fichas e instructores
+
+- **RF-11.** Crear, consultar, editar y cambiar el estado de fichas.
+- **RF-12.** Inscribir aprendices en una ficha y consultar los inscritos.
+- **RF-13.** Asignar instructores a fichas y consultarlos.
+- **RF-14.** Administrar los datos propios de un instructor, vinculados a su usuario.
+
+### Sesiones
+
+- **RF-15.** Crear sesiones con fecha, hora de inicio y fin, ficha, instructor y tema.
+- **RF-16.** Consultar sesiones por ficha, instructor y fecha.
+- **RF-17.** Editar y cancelar sesiones.
+- **RF-18.** Consultar el historial de sesiones realizadas.
+
+### Asistencia
+
+- **RF-19.** Seleccionar una sesión y ver los aprendices inscritos en su ficha.
+- **RF-20.** Registrar asistencia individual con estado: presente, ausente,
+  tardanza o excusa justificada.
+- **RF-21.** Registrar observaciones.
+- **RF-22.** Guardar quién registró y quién modificó cada asistencia.
+- **RF-23.** Corregir asistencias según el rol.
+- **RF-24.** Mostrar el resumen de asistencia de una sesión.
+
+### Reportes y panel
+
+- **RF-25.** Listado de aprendices por ficha.
+- **RF-26.** Historial de asistencia por aprendiz.
+- **RF-27.** Asistencia por ficha y periodo, con filtros por fecha, ficha,
+  instructor y estado.
+- **RF-28.** Porcentaje de asistencia por aprendiz y conteo por estado.
+- **RF-29.** Exportar a CSV los reportes autorizados.
+- **RF-30.** Dashboard por rol con indicadores calculados desde la base de datos.
+
+## 7. Requisitos no funcionales
+
+- **RNF-01 Seguridad.** Contraseñas con Argon2id (o bcrypt como alternativa), sin
+  guardarlas en texto plano. Secretos en variables de entorno.
+- **RNF-02 Integridad.** Consultas SQL parametrizadas, restricciones en la base de
+  datos y transacciones en operaciones atómicas.
+- **RNF-03 Autenticación.** Sesiones en el servidor con cookie `HttpOnly`,
+  `SameSite` y `Secure` en producción.
+- **RNF-04 Usabilidad.** Interfaz en español, responsive, con accesibilidad básica.
+- **RNF-05 Mantenibilidad.** Código separado en rutas, controladores, servicios,
+  validadores y middlewares.
+- **RNF-06 Calidad.** Pruebas automatizadas de la API, los permisos y los reportes.
+- **RNF-07 Costo.** Presupuesto de $0 COP.
+- **RNF-08 Privacidad.** Solo datos ficticios hasta contar con autorización.
+- **RNF-09 Errores.** Mensajes genéricos al cliente; el detalle queda en los
+  registros del servidor.
+
+## 8. Reglas de negocio
+
+### Decisiones aprobadas
+
+- **RN-01 (D1).** Express sirve el frontend y la API desde el mismo origen.
+- **RN-02 (D2).** La autenticación usa sesiones guardadas en PostgreSQL, sin JWT.
+- **RN-03 (D3).** Aprendices, fichas y usuarios se desactivan; no se borran.
+- **RN-04 (D4).** Porcentaje de asistencia:
+  `(presentes + tardanzas) / (sesiones realizadas - excusas justificadas) x 100`.
+  Las sesiones canceladas no cuentan. Las tardanzas cuentan como asistencia.
+  Si el denominador es 0, el porcentaje se muestra como "sin datos".
+- **RN-05 (D5).** No hay recuperación por correo; el Administrador restablece
+  contraseñas.
+- **RN-06 (D6).** El Instructor solo ve y gestiona las fichas que tiene asignadas.
+
+### Reglas propuestas (se pueden ajustar antes de la Etapa 4)
+
+- **RN-07.** El documento de un aprendiz (tipo y número) es único.
+- **RN-08.** Un aprendiz no puede estar inscrito dos veces en la misma ficha.
+- **RN-09.** Un instructor no puede estar asignado dos veces a la misma ficha.
+- **RN-10.** La hora de fin de una sesión es posterior a la hora de inicio.
+- **RN-11.** Un instructor no puede tener dos sesiones activas que se solapen en
+  la misma fecha. Lo mismo aplica para una ficha.
+- **RN-12.** Estados de una sesión: programada, realizada y cancelada. Una sesión
+  pasa a realizada cuando se guarda su asistencia. Una sesión cancelada no admite
+  asistencia.
+- **RN-13.** Cada aprendiz tiene un solo registro de asistencia por sesión.
+- **RN-14.** Solo se registra asistencia de aprendices con inscripción activa en
+  la ficha de la sesión.
+- **RN-15.** Toda modificación de asistencia guarda quién la hizo y cuándo. La
+  tabla de auditoría conserva el valor anterior.
+- **RN-16.** Una cuenta desactivada no puede iniciar sesión y sus sesiones activas
+  se invalidan.
+
+## 9. Permisos por rol (resumen)
+
+Leyenda: C = crear, L = leer, E = editar, D = desactivar, - = sin acceso.
+
+| Módulo | Administrador | Líder académico | Instructor | Consulta |
+|---|---|---|---|---|
+| Usuarios y roles | C L E D | - | - | - |
+| Aprendices | C L E D | C L E D | L (solo sus fichas) | L (autorizado) |
+| Fichas | C L E D | C L E D | L (solo asignadas) | L (autorizado) |
+| Instructores | C L E D | C L E D | L (propio) | L (autorizado) |
+| Sesiones | C L E D | C L E D | C L E (solo sus fichas) | L (autorizado) |
+| Asistencia | C L E | C L E | C L E (sus sesiones) | L (autorizado) |
+| Reportes y CSV | L | L | L (sus fichas) | L (autorizado) |
+
+El alcance exacto del rol Consulta se definirá en las historias de usuario.
+</code></pre>
+<p>Verifica: el archivo debe llamarse exactamente <code>requisitos.md</code> y quedar dentro de <code>docs</code>.</p>
+</details>
+
+<details><summary>2. historias-usuario.md (22 historias)</summary>
+<p>D7: Consulta lee todo, sin usuarios, auditoría ni correo y teléfono del aprendiz, y no modifica.</p>
+<div class="w"><table>
+<tr><th>Id</th><th>Historia</th><th>Criterios clave</th></tr>
+<tr><td>HU-01</td><td>Iniciar sesión</td><td>Mensaje genérico si falla; cuenta inactiva no entra; límite de intentos; contraseña nunca en logs.</td></tr>
+<tr><td>HU-02</td><td>Cerrar sesión</td><td>Sesión invalidada en el servidor; después, la API responde 401; aviso si expira.</td></tr>
+<tr><td>HU-03</td><td>Cambiar mi contraseña</td><td>Exige la actual y confirmación; mínimo 10 caracteres; distinta de la actual; solo hash.</td></tr>
+<tr><td>HU-04</td><td>Gestionar usuarios (Admin.)</td><td>Correo único; otros roles reciben 403; desactivar invalida sesiones; no quedarse sin administrador.</td></tr>
+<tr><td>HU-05</td><td>Restablecer contraseña</td><td>Contraseña temporal con política mínima; sesiones invalidadas; queda auditoría.</td></tr>
+<tr><td>HU-06</td><td>Registrar aprendiz</td><td>Obligatorios: tipo y número de documento, nombres, apellidos; documento único; campos extra ignorados.</td></tr>
+<tr><td>HU-07</td><td>Listar y buscar aprendices</td><td>Paginado; búsqueda por nombre y documento; filtro por ficha; instructor solo ve las suyas; estados vacío y de carga.</td></tr>
+<tr><td>HU-08</td><td>Editar y desactivar aprendiz</td><td>Confirmación al desactivar; historial se conserva; sin borrado físico.</td></tr>
+<tr><td>HU-09</td><td>Historial del aprendiz</td><td>Inscripciones, asistencia por sesión y porcentaje según RN-04.</td></tr>
+<tr><td>HU-10</td><td>Gestionar fichas</td><td>Código único; fecha fin no anterior al inicio; se desactiva, no se borra.</td></tr>
+<tr><td>HU-11</td><td>Inscribir aprendices</td><td>Sin duplicados; retiro por estado; inscripción múltiple atómica.</td></tr>
+<tr><td>HU-12</td><td>Asignar instructores</td><td>Solo rol Instructor; sin asignación duplicada; ve solo sus fichas.</td></tr>
+<tr><td>HU-13</td><td>Programar sesión</td><td>Obligatorios ficha, instructor, fecha, horas y tema; sin solapes; queda programada.</td></tr>
+<tr><td>HU-14</td><td>Consultar sesiones</td><td>Filtros por ficha, instructor, fechas y estado; paginado.</td></tr>
+<tr><td>HU-15</td><td>Editar o cancelar sesión</td><td>Confirmar y motivo opcional; cancelada no cuenta ni admite asistencia.</td></tr>
+<tr><td>HU-16</td><td>Tomar asistencia</td><td>Solo inscritos activos; cuatro estados; sin duplicar; guardado atómico; sesión pasa a realizada.</td></tr>
+<tr><td>HU-17</td><td>Corregir asistencia</td><td>Guarda quién modifica y valor anterior; Consulta recibe 403.</td></tr>
+<tr><td>HU-18</td><td>Resumen de asistencia</td><td>Conteos por estado desde los datos; estado vacío si no hay.</td></tr>
+<tr><td>HU-19</td><td>Reportes de asistencia</td><td>Filtros; fórmula RN-04; “sin datos” si el denominador es 0; cada rol ve lo suyo.</td></tr>
+<tr><td>HU-20</td><td>Exportar CSV</td><td>Solo datos autorizados; UTF-8 con BOM; neutraliza celdas que empiezan con = + - @; avisa si no hay datos.</td></tr>
+<tr><td>HU-21</td><td>Panel principal</td><td>Indicadores desde la base de datos; accesos solo a módulos autorizados.</td></tr>
+<tr><td>HU-22</td><td>Permisos en el servidor</td><td>401 sin sesión, 403 sin permiso aunque se use Postman; CSRF en operaciones que modifican; errores sin detalles internos.</td></tr>
+</table></div>
+<h3>Texto para copiar en <code>docs/historias-usuario.md</code></h3>
+<p>Ruta: <code>siga\docs\historias-usuario.md</code>. Copia todo el recuadro.</p>
+<pre style="max-height:30rem;overflow:auto"><code># Historias de usuario de SIGA
+
+Cada historia indica el actor, la necesidad, los criterios de aceptación y los
+requisitos (RF) y reglas (RN) que cubre. Los códigos remiten a
+`docs/requisitos.md`.
+
+Decisión adicional **D7**: el rol Consulta puede leer aprendices, fichas,
+sesiones, asistencia y reportes de todas las fichas. No ve usuarios, auditoría ni
+los datos de contacto del aprendiz (correo y teléfono), y no puede modificar nada.
+
+## Autenticación y usuarios
+
+### HU-01. Iniciar sesión
+**Como** usuario registrado, **quiero** iniciar sesión con mi correo y contraseña,
+**para** acceder a las funciones de mi rol.
+**Cubre:** RF-01, RN-02, RN-16.
+
+Criterios de aceptación:
+- Con credenciales correctas y cuenta activa, se crea una sesión y se redirige al
+  panel principal.
+- Con credenciales incorrectas se muestra un mensaje genérico ("Correo o
+  contraseña incorrectos"), sin indicar cuál de los dos falló.
+- Una cuenta desactivada no puede iniciar sesión.
+- Tras varios intentos fallidos seguidos, el servidor limita temporalmente los
+  nuevos intentos.
+- La contraseña nunca se muestra ni se registra en los logs.
+
+### HU-02. Cerrar sesión
+**Como** usuario autenticado, **quiero** cerrar sesión, **para** proteger mi cuenta
+en un equipo compartido.
+**Cubre:** RF-01.
+
+Criterios de aceptación:
+- Al cerrar sesión, el servidor invalida la sesión y se regresa a la pantalla de
+  inicio de sesión.
+- Después de cerrar sesión, volver atrás en el navegador no permite ver datos
+  protegidos: cualquier solicitud a la API responde 401.
+- Si la sesión expira, la interfaz informa al usuario y lo envía al inicio de
+  sesión.
+
+### HU-03. Cambiar mi contraseña
+**Como** usuario autenticado, **quiero** cambiar mi contraseña, **para** mantener
+mi cuenta segura.
+**Cubre:** RF-02.
+
+Criterios de aceptación:
+- Se exige la contraseña actual y una nueva contraseña con confirmación.
+- La nueva contraseña cumple una longitud mínima (propuesta: 10 caracteres) y es
+  distinta de la actual.
+- Si la contraseña actual es incorrecta, el cambio se rechaza.
+- La contraseña se guarda solo como hash.
+
+### HU-04. Gestionar usuarios
+**Como** Administrador, **quiero** crear, editar, activar y desactivar usuarios y
+asignarles un rol, **para** controlar quién usa el sistema.
+**Cubre:** RF-03, RN-03, RN-16.
+
+Criterios de aceptación:
+- El correo de cada usuario es único; un duplicado se rechaza con un mensaje claro.
+- Solo el Administrador accede a este módulo; cualquier otro rol recibe 403.
+- Al desactivar un usuario, no puede iniciar sesión y sus sesiones activas se
+  invalidan.
+- Un usuario no puede desactivar su propia cuenta de Administrador si es el único
+  Administrador activo.
+- No se borran usuarios; solo se desactivan.
+
+### HU-05. Restablecer la contraseña de un usuario
+**Como** Administrador, **quiero** restablecer la contraseña de otro usuario,
+**para** que recupere el acceso sin usar correo.
+**Cubre:** RF-04, RN-05.
+
+Criterios de aceptación:
+- El Administrador define una contraseña temporal que cumple la política mínima.
+- La contraseña temporal nunca se muestra después de guardada ni se registra en los
+  logs.
+- Las sesiones activas del usuario afectado se invalidan.
+- Se deja un registro de auditoría de quién hizo el cambio y sobre qué usuario.
+
+## Aprendices
+
+### HU-06. Registrar un aprendiz
+**Como** Líder académico, **quiero** registrar aprendices, **para** tenerlos
+disponibles para inscripciones y asistencia.
+**Cubre:** RF-06, RN-07.
+
+Criterios de aceptación:
+- Los campos obligatorios son tipo de documento, número de documento, nombres y
+  apellidos.
+- La combinación tipo y número de documento es única; un duplicado se rechaza con
+  un mensaje claro.
+- Los campos opcionales (correo y teléfono) se validan en su formato si se
+  diligencian.
+- El servidor ignora cualquier campo que no pertenezca al formulario.
+- Tras guardar, el aprendiz aparece en el listado.
+
+### HU-07. Listar y buscar aprendices
+**Como** Líder académico o Instructor, **quiero** buscar aprendices por nombre,
+documento o ficha, **para** encontrarlos rápidamente.
+**Cubre:** RF-07, RF-08, D6.
+
+Criterios de aceptación:
+- El listado está paginado y muestra el total de resultados.
+- La búsqueda por texto aplica a nombres, apellidos y documento.
+- El filtro por ficha muestra los aprendices inscritos en ella.
+- El Instructor solo ve aprendices de las fichas que tiene asignadas.
+- Si no hay resultados, se muestra un mensaje de estado vacío.
+- Mientras carga, se muestra un indicador de carga.
+
+### HU-08. Editar y desactivar un aprendiz
+**Como** Líder académico, **quiero** corregir los datos de un aprendiz o
+desactivarlo, **para** mantener la información al día.
+**Cubre:** RF-06, RF-09, RN-03.
+
+Criterios de aceptación:
+- Se pueden editar todos los datos, respetando la unicidad del documento.
+- Desactivar un aprendiz exige una confirmación explícita.
+- Un aprendiz desactivado no aparece en las listas de toma de asistencia nuevas,
+  pero su historial se conserva.
+- No se eliminan registros físicamente.
+
+### HU-09. Consultar el historial de un aprendiz
+**Como** Líder académico o Instructor, **quiero** ver las inscripciones y la
+asistencia de un aprendiz, **para** hacer seguimiento a su proceso.
+**Cubre:** RF-10, RF-26.
+
+Criterios de aceptación:
+- Se muestran las fichas en las que está o estuvo inscrito, con su estado.
+- Se muestra su asistencia por sesión, con estado y observación.
+- Se muestra su porcentaje de asistencia calculado con la fórmula de RN-04.
+- El Instructor solo ve el historial correspondiente a sus fichas.
+
+## Fichas e instructores
+
+### HU-10. Gestionar fichas
+**Como** Líder académico, **quiero** crear y editar fichas, **para** organizar los
+grupos de formación.
+**Cubre:** RF-11, RN-03.
+
+Criterios de aceptación:
+- Los datos obligatorios son código, programa, jornada, fecha de inicio y estado.
+- El código de ficha es único.
+- La fecha de fin, si existe, no es anterior a la de inicio.
+- Una ficha se desactiva o cambia de estado, pero no se borra.
+
+### HU-11. Inscribir aprendices en una ficha
+**Como** Líder académico, **quiero** inscribir aprendices en una ficha, **para**
+que aparezcan en la asistencia de sus sesiones.
+**Cubre:** RF-12, RN-08, RN-14.
+
+Criterios de aceptación:
+- No se permite inscribir dos veces al mismo aprendiz en la misma ficha.
+- La pantalla de la ficha lista los aprendices inscritos y su estado de inscripción.
+- Se puede retirar a un aprendiz cambiando el estado de su inscripción, sin perder
+  su historial de asistencia.
+- La inscripción de varios aprendices a la vez es atómica: si una falla, no se
+  guarda ninguna.
+
+### HU-12. Asignar instructores a una ficha
+**Como** Líder académico, **quiero** asignar instructores a una ficha, **para**
+que puedan programar sesiones y tomar asistencia.
+**Cubre:** RF-13, RF-14, RN-06, RN-09.
+
+Criterios de aceptación:
+- Solo se pueden asignar usuarios con rol Instructor.
+- No se puede asignar dos veces el mismo instructor a la misma ficha.
+- Un instructor solo ve las fichas que tiene asignadas.
+- Se puede consultar los instructores asignados a cada ficha.
+
+## Sesiones
+
+### HU-13. Programar una sesión
+**Como** Instructor o Líder académico, **quiero** programar una sesión, **para**
+planificar la formación y luego tomar asistencia.
+**Cubre:** RF-15, RN-10, RN-11.
+
+Criterios de aceptación:
+- Los datos obligatorios son ficha, instructor, fecha, hora de inicio, hora de fin
+  y tema.
+- La hora de fin es posterior a la de inicio.
+- No se permite una sesión que se solape con otra activa del mismo instructor o de
+  la misma ficha en esa fecha; el mensaje indica cuál es el conflicto.
+- El Instructor solo programa sesiones en sus fichas asignadas y a su nombre.
+- La sesión nueva queda en estado "programada".
+
+### HU-14. Consultar sesiones
+**Como** Instructor, Líder académico o Consulta, **quiero** consultar sesiones por
+ficha, instructor y fecha, **para** ver la programación y el historial.
+**Cubre:** RF-16, RF-18.
+
+Criterios de aceptación:
+- Se puede filtrar por ficha, instructor, rango de fechas y estado.
+- El listado está paginado y ordenado por fecha.
+- El historial muestra las sesiones realizadas.
+- El Instructor solo ve sesiones de sus fichas.
+
+### HU-15. Editar o cancelar una sesión
+**Como** Instructor o Líder académico, **quiero** editar o cancelar una sesión,
+**para** reflejar cambios en la programación.
+**Cubre:** RF-17, RN-12.
+
+Criterios de aceptación:
+- Una sesión programada se puede editar respetando las reglas de horario de HU-13.
+- Cancelar exige confirmación y se puede registrar un motivo.
+- Una sesión cancelada no admite asistencia y no cuenta en los porcentajes.
+- Una sesión con asistencia registrada no se puede cancelar sin antes resolver ese
+  registro (regla propuesta; se confirma en la Etapa 4).
+- No se borran sesiones.
+
+## Asistencia
+
+### HU-16. Tomar asistencia
+**Como** Instructor, **quiero** registrar la asistencia de los aprendices de una
+sesión, **para** llevar el control de la formación.
+**Cubre:** RF-19, RF-20, RF-21, RF-22, RN-12, RN-13, RN-14.
+
+Criterios de aceptación:
+- Al elegir una sesión, se muestran los aprendices con inscripción activa en su
+  ficha.
+- Cada aprendiz puede quedar como presente, ausente, tardanza o excusa
+  justificada, con una observación opcional.
+- Una sesión cancelada no permite tomar asistencia.
+- Solo el Instructor asignado a esa ficha, el Líder académico o el Administrador
+  pueden registrarla.
+- No se duplica la asistencia de un aprendiz en la misma sesión.
+- Guardar toda la lista es atómico: o se guardan todos los registros o ninguno.
+- Se guarda quién registró cada asistencia y cuándo.
+- Al guardar, la sesión pasa a "realizada".
+
+### HU-17. Corregir una asistencia
+**Como** Instructor o Líder académico, **quiero** corregir un registro de
+asistencia, **para** arreglar errores.
+**Cubre:** RF-23, RN-15.
+
+Criterios de aceptación:
+- Se puede cambiar el estado y la observación de un registro existente.
+- Se guarda quién modificó y cuándo, y el valor anterior queda en la auditoría.
+- Un usuario con rol Consulta no puede modificar asistencia (403).
+- Un Instructor solo corrige asistencias de sus propias fichas.
+
+### HU-18. Ver el resumen de asistencia de una sesión
+**Como** Instructor o Líder académico, **quiero** ver cuántos aprendices
+estuvieron presentes, ausentes, con tardanza o con excusa en una sesión, **para**
+evaluar la asistencia del grupo.
+**Cubre:** RF-24.
+
+Criterios de aceptación:
+- Se muestran los conteos por estado y el total de aprendices.
+- Los conteos se calculan a partir de los registros guardados, no de valores fijos.
+- Si la sesión aún no tiene asistencia, se muestra un estado vacío.
+
+## Reportes y panel
+
+### HU-19. Consultar reportes de asistencia
+**Como** Líder académico, Instructor o Consulta, **quiero** reportes de asistencia
+con filtros, **para** analizar la situación de fichas y aprendices.
+**Cubre:** RF-25, RF-26, RF-27, RF-28, RN-04.
+
+Criterios de aceptación:
+- Se puede filtrar por fecha, ficha, instructor y estado.
+- El porcentaje de asistencia sigue la fórmula de RN-04: las tardanzas cuentan
+  como asistencia, las excusas justificadas salen del denominador y las sesiones
+  canceladas no cuentan.
+- Si el denominador es 0, se muestra "sin datos" y no un porcentaje.
+- Cada rol ve solo lo que le corresponde (el Instructor, solo sus fichas).
+- Los resultados se calculan desde la base de datos.
+
+### HU-20. Exportar un reporte a CSV
+**Como** usuario autorizado, **quiero** exportar un reporte a CSV, **para**
+analizarlo o archivarlo fuera del sistema.
+**Cubre:** RF-29.
+
+Criterios de aceptación:
+- El archivo contiene exactamente los datos filtrados y autorizados para ese
+  usuario.
+- El archivo abre correctamente en Excel con tildes y eñes (codificación UTF-8 con
+  marca BOM).
+- Los valores que comienzan con `=`, `+`, `-` o `@` se neutralizan para evitar
+  inyección de fórmulas.
+- Si no hay datos, el sistema avisa en lugar de descargar un archivo vacío.
+
+### HU-21. Ver el panel principal
+**Como** usuario autenticado, **quiero** ver un panel con indicadores de mi rol,
+**para** tener una visión rápida del estado del sistema.
+**Cubre:** RF-30.
+
+Criterios de aceptación:
+- Se muestran aprendices activos, fichas registradas, sesiones programadas, últimas
+  sesiones realizadas y un resumen de asistencia, según lo que el rol puede ver.
+- Todas las cifras se calculan desde la base de datos.
+- Se muestran accesos rápidos solo a los módulos autorizados.
+- El Instructor ve solo las cifras de sus fichas.
+
+## Seguridad transversal
+
+### HU-22. Aplicar los permisos en el servidor
+**Como** responsable del sistema, **quiero** que cada operación valide el rol en el
+servidor, **para** que ocultar botones no sea la única protección.
+**Cubre:** RF-05, RN-06.
+
+Criterios de aceptación:
+- Una solicitud sin sesión recibe 401.
+- Una solicitud con sesión pero sin permiso recibe 403, aunque se haga fuera de la
+  interfaz (por ejemplo, con Postman).
+- Un Instructor no puede leer ni modificar datos de fichas que no tiene asignadas.
+- Las operaciones que modifican datos exigen la cabecera de protección CSRF.
+- Los errores no revelan detalles internos ni consultas SQL.
+</code></pre>
+<p>Verifica: el archivo debe llamarse <code>historias-usuario.md</code> y estar dentro de <code>docs</code>. Commit sugerido: <code>Etapa 1: historias de usuario</code>.</p>
+</details>
+
+<details><summary>3. arquitectura.md</summary>
+<h3>Capas y responsabilidades</h3>
+<div class="w"><table>
+<tr><th>Capa</th><th>Responsabilidad</th><th>No debe</th></tr>
+<tr><td>config</td><td>Variables de entorno y conexión a PostgreSQL</td><td>Tener lógica de negocio</td></tr>
+<tr><td>routes</td><td>Asocian URL y método con middleware y controlador</td><td>Consultar la base</td></tr>
+<tr><td>middlewares</td><td>Sesión, rol, CSRF, errores</td><td>Conocer un módulo concreto</td></tr>
+<tr><td>validators</td><td>Verificar y normalizar entrada; solo campos permitidos</td><td>Escribir en la base</td></tr>
+<tr><td>controllers</td><td>Leer la petición, llamar al servicio, responder el código HTTP</td><td>Escribir SQL</td></tr>
+<tr><td>services</td><td>Reglas de negocio, transacciones, SQL parametrizado</td><td>Conocer req ni res</td></tr>
+<tr><td>frontend</td><td>Páginas y scripts que consumen la API</td><td>Aplicar permisos como seguridad</td></tr>
+</table></div>
+<h3>Ciclo de una solicitud</h3>
+<ol><li>El navegador envía la petición con la cookie.</li><li>Helmet, límite de solicitudes y lectura del JSON.</li><li>Sesión: sin ella, 401.</li><li>Rol: sin permiso, 403.</li><li>CSRF en POST, PUT y DELETE.</li><li>Validación: datos inválidos, 400 o 422.</li><li>Controlador y servicio ejecutan la lógica y el SQL.</li><li>Respuesta JSON, o error genérico con detalle solo en el log.</li></ol>
+<p>Códigos previstos: 200, 201, 400, 422, 401, 403, 404, 409 (conflicto, por ejemplo documento duplicado), 429 y 500. Formato propuesto: <code>{ok, datos, meta}</code> o <code>{ok:false, error:{codigo, mensaje}}</code> (se fija en la Etapa 5).</p>
+<h3>Seguridad web</h3>
+<ul><li>Sesión en PostgreSQL; cookie HttpOnly, SameSite=Lax y Secure en producción.</li><li>CSRF (propuesta): cabecera personalizada y verificación de Origin.</li><li>CORS limitado al origen de la app.</li><li>Argon2id; límite de intentos en el login.</li><li>XSS: <code>textContent</code> en vez de <code>innerHTML</code> con datos del usuario.</li><li>SQL solo parametrizado; errores genéricos.</li></ul>
+<h3>Casos de uso</h3>
+<div class="w"><table>
+<tr><th>Id</th><th>Caso</th><th>Actores</th></tr>
+<tr><td>CU-01</td><td>Iniciar y cerrar sesión</td><td>Todos</td></tr>
+<tr><td>CU-02</td><td>Cambiar contraseña propia</td><td>Todos</td></tr>
+<tr><td>CU-03 y 04</td><td>Gestionar usuarios y restablecer contraseña</td><td>Administrador</td></tr>
+<tr><td>CU-05</td><td>Gestionar aprendices</td><td>Administrador, Líder</td></tr>
+<tr><td>CU-06</td><td>Consultar aprendices e historial</td><td>Todos</td></tr>
+<tr><td>CU-07 a 09</td><td>Fichas, inscripciones y asignación de instructores</td><td>Administrador, Líder</td></tr>
+<tr><td>CU-10</td><td>Programar, editar y cancelar sesiones</td><td>Administrador, Líder, Instructor</td></tr>
+<tr><td>CU-11</td><td>Consultar sesiones</td><td>Todos</td></tr>
+<tr><td>CU-12</td><td>Tomar y corregir asistencia</td><td>Administrador, Líder, Instructor</td></tr>
+<tr><td>CU-13 y 14</td><td>Resumen, reportes y CSV</td><td>Todos</td></tr>
+<tr><td>CU-15</td><td>Panel principal</td><td>Todos</td></tr>
+</table></div>
+<h3>Diagramas de secuencia</h3>
+<ul><li><b>Login:</b> el navegador envía las credenciales, el servidor limita intentos, busca al usuario, y responde 401 genérico o crea sesión con cookie HttpOnly.</li><li><b>Asistencia:</b> GET de inscritos, el instructor marca estados, el servidor valida y abre BEGIN, guarda asistencias y auditoría, marca la sesión realizada y hace COMMIT, o ROLLBACK si algo falla.</li><li><b>Reporte y CSV:</b> filtros, alcance por rol, consulta agregada, porcentaje según RN-04 y exportación con celdas neutralizadas.</li></ul>
+<h3>Texto para copiar en <code>docs/arquitectura.md</code></h3>
+<p>Ruta: <code>siga\docs\arquitectura.md</code>. Copia todo el recuadro, incluidas las líneas de tres comillas invertidas con la palabra mermaid: GitHub las dibuja como diagramas.</p>
+<pre style="max-height:30rem;overflow:auto"><code># Arquitectura de SIGA
+
+Proyecto formativo independiente (ADSO). No es una plataforma oficial del SENA.
+Las decisiones D1 a D7 y las reglas RN-01 a RN-16 están en `docs/requisitos.md` y
+`docs/historias-usuario.md`.
+
+## 1. Visión general
+
+SIGA es una aplicación cliente-servidor. El navegador carga páginas HTML, CSS y
+JavaScript nativo que el mismo servidor Express entrega (decisión D1). El
+JavaScript del navegador se comunica con una API REST bajo `/api` mediante
+`fetch`. La API consulta y modifica PostgreSQL.
+
+```mermaid
+flowchart LR
+    U["Navegador&lt;br/&gt;HTML + CSS + JS nativo"] --&gt;|"HTTPS: fetch + cookie de sesión"| E
+
+    subgraph Servidor["Servidor Node.js / Express"]
+        E["app.js&lt;br/&gt;helmet, cors, rate-limit"] --&gt; M["Middlewares&lt;br/&gt;sesión, roles, CSRF"]
+        M --&gt; R["Rutas"]
+        R --&gt; V["Validadores"]
+        V --&gt; C["Controladores"]
+        C --&gt; S["Servicios&lt;br/&gt;lógica de negocio"]
+        S --&gt; D["Acceso a datos&lt;br/&gt;pg + SQL parametrizado"]
+        E -.-&gt;|"archivos estáticos"| F["frontend/"]
+    end
+
+    D --&gt; P[("PostgreSQL")]
+    P --- SS[("Tabla de sesiones")]
+```
+
+## 2. Responsabilidad de cada capa
+
+| Capa | Carpeta | Responsabilidad | Lo que NO debe hacer |
+|---|---|---|---|
+| Configuración | `backend/src/config/` | Leer variables de entorno y crear la conexión a PostgreSQL | Contener lógica de negocio |
+| Rutas | `backend/src/routes/` | Asociar cada URL y método HTTP con su middleware y controlador | Consultar la base de datos |
+| Middlewares | `backend/src/middlewares/` | Sesión, verificación de rol, CSRF, manejo de errores | Conocer reglas de un módulo concreto |
+| Validadores | `backend/src/validators/` | Verificar y normalizar la entrada, aceptar solo campos permitidos | Escribir en la base de datos |
+| Controladores | `backend/src/controllers/` | Leer la petición, llamar al servicio, responder con el código HTTP correcto | Escribir SQL |
+| Servicios | `backend/src/services/` | Reglas de negocio, transacciones y consultas SQL parametrizadas | Conocer `req` ni `res` de Express |
+| Aplicación | `app.js`, `server.js` | `app.js` arma Express; `server.js` lo arranca | Mezclar ambas tareas |
+| Frontend | `frontend/` | Páginas, estilos y scripts que consumen la API | Aplicar permisos como medida de seguridad |
+
+Regla práctica: si cambias una regla de negocio, solo debería cambiar un servicio.
+
+## 3. Ciclo de una solicitud
+
+1. El navegador envía una solicitud a `/api/...` con la cookie de sesión.
+2. Express aplica `helmet`, el límite de solicitudes y el análisis del cuerpo JSON.
+3. El middleware de sesión identifica al usuario. Sin sesión válida responde 401.
+4. El middleware de rol verifica el permiso de la operación. Sin permiso responde 403.
+5. Para métodos que modifican datos se verifica la protección CSRF.
+6. El validador comprueba los datos. Si son inválidos responde 400 o 422.
+7. El controlador llama al servicio, que ejecuta la lógica y las consultas.
+8. Si todo sale bien, el controlador responde en JSON. Si algo falla, el manejador
+   central de errores responde con un mensaje genérico y registra el detalle en el
+   servidor.
+
+### Formato de respuesta (propuesta, se fija en la Etapa 5)
+
+```json
+{ "ok": true, "datos": {}, "meta": { "pagina": 1, "total": 0 } }
+```
+
+```json
+{ "ok": false, "error": { "codigo": "VALIDACION", "mensaje": "Texto para el usuario" } }
+```
+
+Códigos HTTP previstos: 200 y 201 (éxito), 400 y 422 (datos inválidos), 401 (sin
+sesión), 403 (sin permiso), 404 (no existe), 409 (conflicto, por ejemplo un
+documento duplicado), 429 (demasiados intentos) y 500 (error interno).
+
+## 4. Estrategia de autenticación y seguridad web
+
+| Aspecto | Decisión | Motivo |
+|---|---|---|
+| Sesión | Guardada en PostgreSQL (D2) | Permite revocarla al cerrar sesión o desactivar la cuenta (RN-16) |
+| Cookie | `HttpOnly`, `SameSite=Lax`, `Secure` en producción | JavaScript no puede leerla; se reduce el riesgo de XSS y CSRF |
+| CSRF (propuesta) | Cabecera personalizada obligatoria en `POST`, `PUT` y `DELETE`, más verificación del encabezado `Origin` | Una página de otro sitio no puede enviar esa cabecera sin permiso de CORS |
+| CORS | Restringido al origen de la aplicación | Con D1 casi no hay solicitudes entre orígenes |
+| Contraseñas | Argon2id (alternativa: bcrypt) | Nunca se guardan en texto plano |
+| Fuerza bruta | Límite de solicitudes en el inicio de sesión | Reduce los intentos masivos |
+| XSS | El frontend usa `textContent` para datos del usuario y evita `innerHTML` con ellos | Evita ejecutar código inyectado |
+| SQL | Solo consultas parametrizadas | Evita inyección SQL |
+| Errores | Mensaje genérico al cliente, detalle en el registro del servidor | No revela información interna |
+
+## 5. Casos de uso
+
+| Id | Caso de uso | Actores | Historias |
+|---|---|---|---|
+| CU-01 | Iniciar y cerrar sesión | Todos | HU-01, HU-02 |
+| CU-02 | Cambiar contraseña propia | Todos | HU-03 |
+| CU-03 | Gestionar usuarios | Administrador | HU-04 |
+| CU-04 | Restablecer contraseña de un usuario | Administrador | HU-05 |
+| CU-05 | Gestionar aprendices | Administrador, Líder | HU-06, HU-08 |
+| CU-06 | Consultar aprendices e historial | Administrador, Líder, Instructor, Consulta | HU-07, HU-09 |
+| CU-07 | Gestionar fichas | Administrador, Líder | HU-10 |
+| CU-08 | Inscribir aprendices en una ficha | Administrador, Líder | HU-11 |
+| CU-09 | Asignar instructores a una ficha | Administrador, Líder | HU-12 |
+| CU-10 | Programar, editar y cancelar sesiones | Administrador, Líder, Instructor | HU-13, HU-15 |
+| CU-11 | Consultar sesiones | Todos | HU-14 |
+| CU-12 | Tomar y corregir asistencia | Administrador, Líder, Instructor | HU-16, HU-17 |
+| CU-13 | Ver resumen de asistencia de una sesión | Administrador, Líder, Instructor, Consulta | HU-18 |
+| CU-14 | Consultar reportes y exportar a CSV | Administrador, Líder, Instructor, Consulta | HU-19, HU-20 |
+| CU-15 | Ver el panel principal | Todos | HU-21 |
+
+### Diagrama de casos de uso por actor
+
+```mermaid
+flowchart LR
+    ADM(["Administrador"])
+    LID(["Líder académico"])
+    INS(["Instructor"])
+    CON(["Consulta"])
+
+    subgraph SIGA["Sistema SIGA"]
+        direction TB
+        C01(("CU-01&lt;br/&gt;Sesión"))
+        C02(("CU-02&lt;br/&gt;Contraseña propia"))
+        C03(("CU-03 y CU-04&lt;br/&gt;Usuarios"))
+        C05(("CU-05&lt;br/&gt;Gestionar aprendices"))
+        C06(("CU-06&lt;br/&gt;Consultar aprendices"))
+        C07(("CU-07, 08 y 09&lt;br/&gt;Fichas, inscripciones,&lt;br/&gt;asignaciones"))
+        C10(("CU-10&lt;br/&gt;Gestionar sesiones"))
+        C11(("CU-11&lt;br/&gt;Consultar sesiones"))
+        C12(("CU-12&lt;br/&gt;Asistencia"))
+        C14(("CU-13 y CU-14&lt;br/&gt;Reportes y CSV"))
+        C15(("CU-15&lt;br/&gt;Panel"))
+    end
+
+    ADM --&gt; C01 &amp; C02 &amp; C03 &amp; C05 &amp; C06 &amp; C07 &amp; C10 &amp; C11 &amp; C12 &amp; C14 &amp; C15
+    LID --&gt; C01 &amp; C02 &amp; C05 &amp; C06 &amp; C07 &amp; C10 &amp; C11 &amp; C12 &amp; C14 &amp; C15
+    INS --&gt; C01 &amp; C02 &amp; C06 &amp; C10 &amp; C11 &amp; C12 &amp; C14 &amp; C15
+    CON --&gt; C01 &amp; C02 &amp; C06 &amp; C11 &amp; C14 &amp; C15
+```
+
+Nota: para el Instructor, los casos CU-06, CU-10, CU-11, CU-12 y CU-14 se
+limitan a las fichas que tiene asignadas (D6). Para Consulta, solo lectura y sin
+datos de contacto (D7).
+
+## 6. Diagramas de secuencia
+
+### 6.1 Inicio de sesión (HU-01)
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant N as Navegador
+    participant A as API Express
+    participant B as PostgreSQL
+
+    U-&gt;&gt;N: Escribe correo y contraseña
+    N-&gt;&gt;A: POST /api/auth/login
+    A-&gt;&gt;A: Límite de intentos y validación
+    A-&gt;&gt;B: Buscar usuario por correo (consulta parametrizada)
+    B--&gt;&gt;A: Usuario con hash, rol y estado
+    alt Usuario inexistente, inactivo o contraseña incorrecta
+        A--&gt;&gt;N: 401 "Correo o contraseña incorrectos"
+        N--&gt;&gt;U: Mensaje genérico
+    else Credenciales válidas y cuenta activa
+        A-&gt;&gt;B: Crear sesión
+        A--&gt;&gt;N: 200 + cookie HttpOnly con el identificador de sesión
+        N--&gt;&gt;U: Redirige al panel principal
+    end
+```
+
+### 6.2 Tomar asistencia (HU-16)
+
+```mermaid
+sequenceDiagram
+    actor I as Instructor
+    participant N as Navegador
+    participant A as API Express
+    participant B as PostgreSQL
+
+    I-&gt;&gt;N: Elige una sesión
+    N-&gt;&gt;A: GET /api/sesiones/:id/asistencias
+    A-&gt;&gt;A: Sesión válida, rol y ficha asignada
+    A-&gt;&gt;B: Consultar sesión e inscritos activos
+    B--&gt;&gt;A: Lista de aprendices
+    A--&gt;&gt;N: 200 + lista
+    I-&gt;&gt;N: Marca estados y observaciones
+    N-&gt;&gt;A: POST /api/sesiones/:id/asistencias
+    A-&gt;&gt;A: Validar estados, sesión no cancelada, sin duplicados
+    A-&gt;&gt;B: BEGIN
+    A-&gt;&gt;B: Guardar asistencias y auditoría
+    A-&gt;&gt;B: Marcar sesión como realizada
+    alt Todo correcto
+        A-&gt;&gt;B: COMMIT
+        A--&gt;&gt;N: 200 resumen de asistencia
+    else Algún error
+        A-&gt;&gt;B: ROLLBACK
+        A--&gt;&gt;N: Código de error y mensaje claro
+    end
+    N--&gt;&gt;I: Muestra el resultado
+```
+
+### 6.3 Reporte de asistencia y exportación a CSV (HU-19, HU-20)
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant N as Navegador
+    participant A as API Express
+    participant B as PostgreSQL
+
+    U-&gt;&gt;N: Aplica filtros (fecha, ficha, instructor, estado)
+    N-&gt;&gt;A: GET /api/reportes/asistencia?filtros
+    A-&gt;&gt;A: Sesión, rol y alcance de fichas (D6, D7)
+    A-&gt;&gt;B: Consulta agregada con parámetros
+    B--&gt;&gt;A: Conteos por estado
+    A-&gt;&gt;A: Calcular porcentaje según RN-04
+    A--&gt;&gt;N: 200 con filas y porcentajes
+    N--&gt;&gt;U: Muestra tabla
+    U-&gt;&gt;N: Pulsa "Exportar CSV"
+    N-&gt;&gt;A: Misma consulta con formato CSV
+    A-&gt;&gt;A: Neutralizar celdas que empiezan con = + - @
+    A--&gt;&gt;N: Archivo CSV UTF-8 con BOM
+```
+
+## 7. Despliegue previsto (se verifica en la Etapa 9)
+
+Un solo servicio Node.js que sirve frontend y API, y una base de datos PostgreSQL
+administrada. Los planes gratuitos pueden cambiar o suspender la aplicación por
+inactividad; las condiciones vigentes se comprueban antes de elegir proveedor.
+
+## 8. Pendientes de esta etapa
+
+- Fijar el formato definitivo de respuestas y errores (Etapa 5).
+- Concretar el nombre de la tabla de sesiones y la cabecera CSRF (Etapa 5).
+- Modelo entidad-relación final y diccionario de datos (Parte 4).
+</code></pre>
+<p>Verifica: el archivo debe llamarse <code>arquitectura.md</code> y estar dentro de <code>docs</code>. Commit sugerido: <code>Etapa 2: arquitectura, casos de uso y secuencias</code>. Al verlo en GitHub deben dibujarse cinco diagramas.</p>
+</details>
+
+<details><summary>4. modelo-er.md</summary>
+<h3>Relaciones</h3>
+<div class="w"><table>
+<tr><th>Relación</th><th>Significado</th></tr>
+<tr><td>roles - usuarios (1 a N)</td><td>Cada usuario tiene un rol.</td></tr>
+<tr><td>usuarios - instructores (1 a 0..1)</td><td>El instructor es un usuario; no se duplican datos personales.</td></tr>
+<tr><td>aprendices - inscripciones - fichas (N a M)</td><td>Un aprendiz puede tener varias fichas.</td></tr>
+<tr><td>instructores - asignaciones - fichas (N a M)</td><td>Un instructor atiende varias fichas.</td></tr>
+<tr><td>asignaciones - sesiones</td><td>Clave foránea compuesta (instructor_id, ficha_id): RN-17, propuesta por confirmar.</td></tr>
+<tr><td>sesiones, inscripciones - asistencias</td><td>Un registro por aprendiz y sesión, ligado a la inscripción.</td></tr>
+<tr><td>usuarios - asistencias, auditoría</td><td>Quién registró, modificó o realizó la acción.</td></tr>
+</table></div>
+<h3>Normalización y decisiones</h3>
+<ul><li>1FN a 3FN: datos de personas una sola vez; tablas intermedias para N a M.</li><li>Desnormalización deliberada: <code>fichas.programa</code> es texto; una tabla <code>programas</code> queda como mejora.</li><li>Todas las claves foráneas usan <code>ON DELETE RESTRICT</code> porque no se borra físicamente (D3).</li><li>Fecha y hora de sesión como <code>date</code> y <code>time</code>; auditoría y creación como <code>timestamptz</code>.</li><li>Auditoría en <code>jsonb</code>, sin contraseñas ni hashes.</li></ul>
+<h3>Restricciones</h3>
+<ul><li>usuarios: índice único sobre <code>lower(correo)</code>.</li><li>aprendices: UNIQUE (tipo_documento, numero_documento).</li><li>fichas: código único y <code>fecha_fin &gt;= fecha_inicio</code>.</li><li>inscripciones: UNIQUE (aprendiz_id, ficha_id).</li><li>asignaciones: UNIQUE (instructor_id, ficha_id).</li><li>sesiones: <code>hora_fin &gt; hora_inicio</code>; exclusión de solapes con <code>btree_gist</code> (se verifica en la Etapa 4).</li><li>asistencias: UNIQUE (sesion_id, inscripcion_id) y CHECK de coherencia de modificación.</li><li>Validadas por el servidor en transacción: inscripción de la ficha de la sesión, sesión no cancelada y rol Instructor.</li></ul>
+<h3>Índices y migraciones</h3>
+<ul><li>Índices en claves foráneas frecuentes, búsqueda de aprendices por apellidos y nombres, auditoría por entidad y fecha, y <code>session(expire)</code>.</li><li>Migraciones SQL numeradas en <code>database/migrations/</code>, registro en <code>schema_migrations</code>, aplicadas en transacción. Una migración aplicada no se edita; si algo sale mal, se restaura el respaldo.</li></ul>
+<h3>Texto para copiar en <code>database/modelo-er.md</code></h3>
+<p>Ruta: <code>siga\database\modelo-er.md</code> (carpeta <code>database</code>, no <code>docs</code>). Copia todo el recuadro, incluidas las líneas de tres comillas invertidas con la palabra mermaid.</p>
+<pre style="max-height:30rem;overflow:auto"><code># Modelo entidad-relación de SIGA (versión final de diseño)
+
+Proyecto formativo independiente (ADSO). Datos ficticios únicamente.
+Detalle de columnas en `docs/diccionario-datos.md`.
+
+## 1. Diagrama
+
+```mermaid
+erDiagram
+    ROLES ||--o{ USUARIOS : "tiene"
+    USUARIOS ||--o| INSTRUCTORES : "puede ser"
+    USUARIOS ||--o{ AUDITORIA : "genera"
+    USUARIOS ||--o{ SESIONES : "crea"
+    USUARIOS ||--o{ ASISTENCIAS : "registra"
+    USUARIOS ||--o{ ASISTENCIAS : "modifica"
+    APRENDICES ||--o{ INSCRIPCIONES : "se inscribe"
+    FICHAS ||--o{ INSCRIPCIONES : "agrupa"
+    INSTRUCTORES ||--o{ ASIGNACIONES_INSTRUCTOR : "es asignado"
+    FICHAS ||--o{ ASIGNACIONES_INSTRUCTOR : "tiene"
+    ASIGNACIONES_INSTRUCTOR ||--o{ SESIONES : "habilita"
+    SESIONES ||--o{ ASISTENCIAS : "registra"
+    INSCRIPCIONES ||--o{ ASISTENCIAS : "corresponde a"
+
+    ROLES {
+        smallint id PK
+        varchar nombre UK
+        varchar descripcion
+    }
+    USUARIOS {
+        int id PK
+        varchar nombres
+        varchar apellidos
+        varchar correo UK
+        text password_hash
+        smallint rol_id FK
+        boolean activo
+        boolean debe_cambiar_password
+        timestamptz ultimo_acceso
+        timestamptz creado_en
+        timestamptz actualizado_en
+    }
+    INSTRUCTORES {
+        int id PK
+        int usuario_id FK,UK
+        varchar especialidad
+        boolean activo
+    }
+    APRENDICES {
+        int id PK
+        varchar tipo_documento
+        varchar numero_documento
+        varchar nombres
+        varchar apellidos
+        varchar correo
+        varchar telefono
+        boolean activo
+        timestamptz creado_en
+        timestamptz actualizado_en
+    }
+    FICHAS {
+        int id PK
+        varchar codigo UK
+        varchar programa
+        varchar jornada
+        date fecha_inicio
+        date fecha_fin
+        varchar estado
+    }
+    INSCRIPCIONES {
+        int id PK
+        int aprendiz_id FK
+        int ficha_id FK
+        varchar estado
+        date fecha_inscripcion
+        date fecha_retiro
+    }
+    ASIGNACIONES_INSTRUCTOR {
+        int id PK
+        int instructor_id FK
+        int ficha_id FK
+        date fecha_asignacion
+        boolean activa
+    }
+    SESIONES {
+        int id PK
+        int ficha_id FK
+        int instructor_id FK
+        date fecha
+        time hora_inicio
+        time hora_fin
+        varchar tema
+        varchar estado
+        varchar motivo_cancelacion
+        int creado_por FK
+        timestamptz creado_en
+        timestamptz actualizado_en
+    }
+    ASISTENCIAS {
+        int id PK
+        int sesion_id FK
+        int inscripcion_id FK
+        varchar estado
+        varchar observacion
+        int registrado_por FK
+        timestamptz registrado_en
+        int modificado_por FK
+        timestamptz modificado_en
+    }
+    AUDITORIA {
+        bigint id PK
+        int usuario_id FK
+        varchar accion
+        varchar entidad
+        bigint entidad_id
+        jsonb datos_antes
+        jsonb datos_despues
+        timestamptz fecha
+    }
+```
+
+Además existe la tabla técnica `session`, que usa `connect-pg-simple` para
+guardar las sesiones (decisión D2). No tiene relaciones con las demás.
+
+## 2. Descripción de relaciones
+
+| Relación | Cardinalidad | Significado |
+|---|---|---|
+| roles - usuarios | 1 a N | Cada usuario tiene exactamente un rol. |
+| usuarios - instructores | 1 a 0..1 | Un instructor es un usuario con rol Instructor; los datos personales no se duplican. |
+| aprendices - inscripciones - fichas | N a M | Un aprendiz puede tener inscripciones en varias fichas; una ficha agrupa muchos aprendices. |
+| instructores - asignaciones - fichas | N a M | Un instructor puede atender varias fichas y una ficha puede tener varios instructores. |
+| asignaciones - sesiones | 1 a N | Una sesión se apoya en una asignación válida de instructor a ficha (RN-17). Se implementa con una clave foránea compuesta `(instructor_id, ficha_id)`. |
+| sesiones - asistencias | 1 a N | Una sesión tiene un registro por aprendiz inscrito. |
+| inscripciones - asistencias | 1 a N | La asistencia se liga a la inscripción, no solo al aprendiz, para conservar el contexto de la ficha. |
+| usuarios - asistencias | 1 a N (dos veces) | Quién registró y quién modificó. |
+| usuarios - auditoria | 1 a N | Quién realizó la operación auditada. |
+
+## 3. Normalización
+
+- **1FN:** todas las columnas guardan valores simples; no hay listas dentro de una celda.
+- **2FN y 3FN:** los datos de personas viven una sola vez (`usuarios`,
+  `aprendices`). Las relaciones muchos a muchos usan tablas intermedias, y los
+  atributos de cada tabla dependen de su propia clave.
+- **Desnormalización deliberada:** `fichas.programa` es texto repetido entre
+  fichas del mismo programa. Una tabla `programas` queda como mejora futura.
+- **Auditoría:** `datos_antes` y `datos_despues` son `jsonb` para guardar el
+  cambio sin crear una tabla de historial por entidad. Nunca incluyen contraseñas
+  ni hashes.
+
+## 4. Integridad referencial
+
+- Todas las claves foráneas usan `ON DELETE RESTRICT`: como no se borra
+  físicamente (D3), un intento de borrado falla en lugar de dejar huérfanos.
+- La baja se hace con `activo`, `estado` o `activa`.
+- Las claves primarias son enteros de identidad generada por la base de datos.
+
+## 5. Restricciones principales
+
+| Tabla | Restricción | Regla |
+|---|---|---|
+| usuarios | Índice único sobre `lower(correo)` | Correo único sin distinguir mayúsculas |
+| aprendices | `UNIQUE (tipo_documento, numero_documento)` | RN-07 |
+| fichas | `UNIQUE (codigo)` y `CHECK (fecha_fin &gt;= fecha_inicio)` | HU-10 |
+| inscripciones | `UNIQUE (aprendiz_id, ficha_id)` | RN-08 |
+| asignaciones_instructor | `UNIQUE (instructor_id, ficha_id)` | RN-09 |
+| sesiones | `CHECK (hora_fin &gt; hora_inicio)` | RN-10 |
+| sesiones | Clave foránea compuesta `(instructor_id, ficha_id)` hacia asignaciones | RN-17 |
+| sesiones | Exclusión por instructor y por ficha con rango de tiempo, para sesiones no canceladas | RN-11 (a verificar en la Etapa 4) |
+| asistencias | `UNIQUE (sesion_id, inscripcion_id)` | RN-13 |
+| asistencias | `CHECK` sobre `estado` y coherencia de `modificado_por` y `modificado_en` | RN-15 |
+
+Reglas que **no** caben en una restricción simple y las valida el servidor dentro
+de una transacción: que la inscripción pertenezca a la ficha de la sesión (RN-14),
+que la sesión no esté cancelada al tomar asistencia (RN-12) y que el usuario
+asignado tenga rol Instructor.
+
+## 6. Índices previstos
+
+- Claves foráneas consultadas con frecuencia: `inscripciones(ficha_id)`,
+  `inscripciones(aprendiz_id)`, `asistencias(inscripcion_id)`, `sesiones(ficha_id, fecha)`,
+  `sesiones(instructor_id, fecha)`.
+- Búsqueda de aprendices: `aprendices(apellidos, nombres)`.
+- Auditoría: `auditoria(entidad, entidad_id)` y `auditoria(fecha)`.
+- Sesiones HTTP: `session(expire)`.
+- Los índices de unicidad de la sección 5 crean sus propios índices.
+
+## 7. Estrategia de migraciones
+
+1. Los cambios de esquema se escriben como archivos SQL numerados en
+   `database/migrations/` (por ejemplo `001_roles_usuarios.sql`).
+2. Una tabla `schema_migrations` guarda cuáles ya se aplicaron.
+3. Un script sencillo (`backend/src/config/migrate.js`) aplica en orden las
+   pendientes, cada una dentro de una transacción.
+4. **Una migración aplicada no se edita.** Un cambio nuevo es un archivo nuevo.
+5. No se escriben migraciones de reversa en la v1; si algo sale mal en un entorno
+   se restaura el respaldo (`pg_dump`) y se corrige la migración.
+6. Los datos ficticios viven en `database/seeds/` y nunca se cargan en producción
+   con contraseñas conocidas.
+</code></pre>
+<p>Commit sugerido (junto con el diccionario): <code>Etapa 2: modelo ER final y diccionario de datos</code>.</p>
+</details>
+
+<details><summary>5. diccionario-datos.md</summary>
+<p>Claves primarias: enteros de identidad (roles: smallint; auditoría: bigint). Nombres en minúsculas, sin tildes ni ñ.</p>
+<div class="w"><table>
+<tr><th>Tabla</th><th>Columnas y restricciones</th></tr>
+<tr><td>roles</td><td>id, nombre (único: administrador, lider_academico, instructor, consulta), descripcion.</td></tr>
+<tr><td>usuarios</td><td>id, nombres, apellidos, correo varchar(254), password_hash text, rol_id FK, activo, debe_cambiar_password, ultimo_acceso, creado_en, actualizado_en.</td></tr>
+<tr><td>instructores</td><td>id, usuario_id FK único, especialidad, activo.</td></tr>
+<tr><td>aprendices</td><td>id, tipo_documento CHECK (CC, TI, CE, PEP, PPT, PA), numero_documento, nombres, apellidos, correo y telefono opcionales, activo, marcas de tiempo.</td></tr>
+<tr><td>fichas</td><td>id, codigo único, programa, jornada CHECK (diurna, nocturna, mixta), fecha_inicio, fecha_fin, estado CHECK (activa, finalizada, inactiva).</td></tr>
+<tr><td>inscripciones</td><td>id, aprendiz_id, ficha_id, estado CHECK (activa, retirada, finalizada), fecha_inscripcion, fecha_retiro.</td></tr>
+<tr><td>asignaciones_instructor</td><td>id, instructor_id, ficha_id, fecha_asignacion, activa.</td></tr>
+<tr><td>sesiones</td><td>id, ficha_id, instructor_id, fecha, hora_inicio, hora_fin, tema, estado CHECK (programada, realizada, cancelada), motivo_cancelacion, creado_por FK, marcas de tiempo.</td></tr>
+<tr><td>asistencias</td><td>id, sesion_id, inscripcion_id, estado CHECK (presente, ausente, tardanza, excusa), observacion, registrado_por, registrado_en, modificado_por, modificado_en.</td></tr>
+<tr><td>auditoria</td><td>id bigint, usuario_id (nulo si no hay usuario), accion, entidad, entidad_id, datos_antes y datos_despues en jsonb, fecha.</td></tr>
+<tr><td>session</td><td>Tabla técnica de connect-pg-simple: sid, sess, expire (se confirma en la Etapa 5).</td></tr>
+<tr><td>schema_migrations</td><td>Tabla técnica: nombre del archivo aplicado y fecha.</td></tr>
+</table></div>
+<h3>Texto para copiar en <code>docs/diccionario-datos.md</code></h3>
+<p>Ruta: <code>siga\docs\diccionario-datos.md</code>. Copia todo el recuadro.</p>
+<pre style="max-height:30rem;overflow:auto"><code># Diccionario de datos de SIGA
+
+Base de datos PostgreSQL. Datos ficticios únicamente. Relaciones y reglas en
+`database/modelo-er.md`.
+
+Convenciones:
+
+- **PK:** clave primaria. Todas son `integer GENERATED ALWAYS AS IDENTITY`,
+  salvo `roles.id` (`smallint`) y `auditoria.id` (`bigint`).
+- **FK:** clave foránea con `ON DELETE RESTRICT`.
+- Los nombres de tablas y columnas van en minúsculas, sin tildes ni ñ.
+- Las marcas de tiempo usan `timestamptz`; `creado_en` toma `now()` por defecto.
+
+## roles
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | smallint | No | PK |
+| nombre | varchar(30) | No | Único. Valores iniciales: `administrador`, `lider_academico`, `instructor`, `consulta` |
+| descripcion | varchar(200) | Sí | Texto explicativo |
+
+## usuarios
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| nombres | varchar(100) | No | No vacío |
+| apellidos | varchar(100) | No | No vacío |
+| correo | varchar(254) | No | Índice único sobre `lower(correo)` |
+| password_hash | text | No | Hash Argon2id o bcrypt. Nunca texto plano |
+| rol_id | smallint | No | FK a `roles(id)` |
+| activo | boolean | No | Por defecto `true`. Si es `false` no puede iniciar sesión (RN-16) |
+| debe_cambiar_password | boolean | No | Por defecto `false`. Pasa a `true` tras un restablecimiento (HU-05) |
+| ultimo_acceso | timestamptz | Sí | Último inicio de sesión correcto |
+| creado_en | timestamptz | No | Por defecto `now()` |
+| actualizado_en | timestamptz | No | Por defecto `now()` |
+
+## instructores
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| usuario_id | integer | No | FK a `usuarios(id)`. Único: un usuario es un solo instructor |
+| especialidad | varchar(100) | Sí | Área de formación |
+| activo | boolean | No | Por defecto `true` |
+
+El servidor verifica que el usuario vinculado tenga el rol `instructor`.
+
+## aprendices
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| tipo_documento | varchar(5) | No | `CHECK` en (`CC`, `TI`, `CE`, `PEP`, `PPT`, `PA`) |
+| numero_documento | varchar(20) | No | `CHECK` alfanumérico de 4 a 20 caracteres |
+| nombres | varchar(100) | No | No vacío |
+| apellidos | varchar(100) | No | No vacío |
+| correo | varchar(254) | Sí | Formato validado en el servidor |
+| telefono | varchar(20) | Sí | Formato validado en el servidor |
+| activo | boolean | No | Por defecto `true` |
+| creado_en | timestamptz | No | Por defecto `now()` |
+| actualizado_en | timestamptz | No | Por defecto `now()` |
+
+Restricción: `UNIQUE (tipo_documento, numero_documento)`.
+
+## fichas
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| codigo | varchar(20) | No | Único |
+| programa | varchar(150) | No | Nombre del programa de formación |
+| jornada | varchar(10) | No | `CHECK` en (`diurna`, `nocturna`, `mixta`) |
+| fecha_inicio | date | No | |
+| fecha_fin | date | Sí | `CHECK (fecha_fin &gt;= fecha_inicio)` |
+| estado | varchar(12) | No | `CHECK` en (`activa`, `finalizada`, `inactiva`). Por defecto `activa` |
+
+## inscripciones
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| aprendiz_id | integer | No | FK a `aprendices(id)` |
+| ficha_id | integer | No | FK a `fichas(id)` |
+| estado | varchar(12) | No | `CHECK` en (`activa`, `retirada`, `finalizada`). Por defecto `activa` |
+| fecha_inscripcion | date | No | Por defecto la fecha actual |
+| fecha_retiro | date | Sí | `CHECK (fecha_retiro IS NULL OR fecha_retiro &gt;= fecha_inscripcion)` |
+
+Restricción: `UNIQUE (aprendiz_id, ficha_id)`.
+
+## asignaciones_instructor
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| instructor_id | integer | No | FK a `instructores(id)` |
+| ficha_id | integer | No | FK a `fichas(id)` |
+| fecha_asignacion | date | No | Por defecto la fecha actual |
+| activa | boolean | No | Por defecto `true`. Retirar una asignación la pone en `false` y conserva el historial |
+
+Restricción: `UNIQUE (instructor_id, ficha_id)`. Esta restricción también es el
+destino de la clave foránea compuesta de `sesiones`.
+
+## sesiones
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| ficha_id | integer | No | Parte de la FK compuesta |
+| instructor_id | integer | No | Parte de la FK compuesta |
+| fecha | date | No | Fecha local de la sesión |
+| hora_inicio | time | No | Hora local |
+| hora_fin | time | No | `CHECK (hora_fin &gt; hora_inicio)` |
+| tema | varchar(200) | No | No vacío |
+| estado | varchar(12) | No | `CHECK` en (`programada`, `realizada`, `cancelada`). Por defecto `programada` |
+| motivo_cancelacion | varchar(300) | Sí | Opcional al cancelar |
+| creado_por | integer | No | FK a `usuarios(id)` |
+| creado_en | timestamptz | No | Por defecto `now()` |
+| actualizado_en | timestamptz | No | Por defecto `now()` |
+
+Restricciones:
+
+- `FOREIGN KEY (instructor_id, ficha_id) REFERENCES asignaciones_instructor (instructor_id, ficha_id)`.
+- Exclusión por instructor y por ficha para evitar solapes entre sesiones no
+  canceladas (a verificar en la Etapa 4).
+
+## asistencias
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | integer | No | PK |
+| sesion_id | integer | No | FK a `sesiones(id)` |
+| inscripcion_id | integer | No | FK a `inscripciones(id)` |
+| estado | varchar(10) | No | `CHECK` en (`presente`, `ausente`, `tardanza`, `excusa`) |
+| observacion | varchar(500) | Sí | Texto libre |
+| registrado_por | integer | No | FK a `usuarios(id)` |
+| registrado_en | timestamptz | No | Por defecto `now()` |
+| modificado_por | integer | Sí | FK a `usuarios(id)` |
+| modificado_en | timestamptz | Sí | `CHECK ((modificado_por IS NULL) = (modificado_en IS NULL))` |
+
+Restricción: `UNIQUE (sesion_id, inscripcion_id)`.
+
+## auditoria
+
+| Columna | Tipo | Nulo | Descripción y restricciones |
+|---|---|---|---|
+| id | bigint | No | PK, identidad generada |
+| usuario_id | integer | Sí | FK a `usuarios(id)`. Nulo si la acción no tiene usuario (por ejemplo, un intento de inicio de sesión fallido) |
+| accion | varchar(50) | No | Por ejemplo `crear`, `editar`, `desactivar`, `restablecer_password` |
+| entidad | varchar(50) | No | Nombre de la tabla afectada |
+| entidad_id | bigint | Sí | Identificador del registro afectado |
+| datos_antes | jsonb | Sí | Estado previo. **Nunca incluye contraseñas ni hashes** |
+| datos_despues | jsonb | Sí | Estado posterior. **Nunca incluye contraseñas ni hashes** |
+| fecha | timestamptz | No | Por defecto `now()` |
+
+## session (tabla técnica)
+
+La crea la migración inicial y la usa `connect-pg-simple`. El nombre y las
+columnas exactas se confirman en la Etapa 5.
+
+| Columna | Tipo | Nulo | Descripción |
+|---|---|---|---|
+| sid | varchar | No | PK, identificador de sesión |
+| sess | json | No | Datos de la sesión (id de usuario y rol, nunca contraseñas) |
+| expire | timestamp | No | Vencimiento; con índice |
+
+## schema_migrations (tabla técnica)
+
+| Columna | Tipo | Nulo | Descripción |
+|---|---|---|---|
+| nombre | varchar(200) | No | PK, nombre del archivo aplicado |
+| aplicada_en | timestamptz | No | Por defecto `now()` |
+
+## Valores permitidos
+
+| Campo | Valores |
+|---|---|
+| aprendices.tipo_documento | CC, TI, CE, PEP, PPT, PA |
+| fichas.jornada | diurna, nocturna, mixta |
+| fichas.estado | activa, finalizada, inactiva |
+| inscripciones.estado | activa, retirada, finalizada |
+| sesiones.estado | programada, realizada, cancelada |
+| asistencias.estado | presente, ausente, tardanza, excusa |
+</code></pre>
+<p>Commit sugerido (junto con el modelo ER): <code>Etapa 2: modelo ER final y diccionario de datos</code>.</p>
+</details>
+
+<div class="box warn"><b>Nota</b>Los resúmenes de cada bloque son orientativos; el texto exacto para copiar está al final de cada uno. Los criterios de aceptación de las historias se resumieron y no aparecen completos. Los tamaños y valores de cada columna se condensaron.</div>
+</section>
+
+<section id="p6"><h2>Glosario y siguiente etapa</h2>
+<div class="w"><table>
+<tr><th>Término</th><th>Significado sencillo</th></tr>
+<tr><td>Repositorio</td><td>Carpeta de proyecto vigilada por Git.</td></tr>
+<tr><td>Commit</td><td>Una “foto” del proyecto con un mensaje.</td></tr>
+<tr><td>Push</td><td>Enviar commits al repositorio remoto (GitHub).</td></tr>
+<tr><td>PATH</td><td>Lista de carpetas donde Windows busca los comandos.</td></tr>
+<tr><td>API REST</td><td>Conjunto de URL que el navegador usa para pedir y guardar datos.</td></tr>
+<tr><td>CRUD</td><td>Crear, leer, actualizar y borrar (aquí, desactivar).</td></tr>
+<tr><td>Clave primaria / foránea</td><td>Identificador único de una fila / enlace a una fila de otra tabla.</td></tr>
+<tr><td>Restricción</td><td>Regla que la base de datos obliga a cumplir (único, no nulo, CHECK).</td></tr>
+<tr><td>Migración</td><td>Archivo SQL numerado que cambia la estructura de la base de datos.</td></tr>
+<tr><td>Hash</td><td>Huella irreversible de una contraseña; nunca se guarda el texto real.</td></tr>
+<tr><td>Sesión</td><td>Registro en el servidor de que un usuario ya inició sesión.</td></tr>
+<tr><td>Mermaid</td><td>Lenguaje de texto que GitHub dibuja como diagrama.</td></tr>
+</table></div>
+<div class="why"><b>Siguiente: Etapa 4, base de datos</b>Se crea la base <code>siga</code> y un usuario <code>siga_app</code> con mínimo privilegio (si la aplicación es atacada, solo puede lo imprescindible). Luego las migraciones SQL, los datos ficticios y pruebas con inserciones inválidas que demuestran que las restricciones funcionan.</div></section>
+
+</main>
+<footer>Proyecto formativo ADSO. Guía elaborada con datos ficticios; no es material oficial del SENA.</footer>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>
+try{
+ if(window.mermaid){
+  var d=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches;
+  mermaid.initialize({startOnLoad:true,theme:d?"dark":"default"});
+ }
+}catch(e){}
+</script>
+
+<!--claude-mermaid-runtime-begin:3477-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="/_runtime/mermaid-11.16.1.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:pre.textContent||''};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+</body>
+</html>
